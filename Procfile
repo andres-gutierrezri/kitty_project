@@ -1,0 +1,1 @@
+web: python3 manage.py collectstatic --noinput && python3 manage.py makemigrations && python3 manage.py migrate && python3 create_default_superuser.py && gunicorn kitty_glow.wsgi:application --workers 3 --bind 0.0.0.0:8080 --log-file -

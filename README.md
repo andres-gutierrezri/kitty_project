@@ -1,0 +1,1349 @@
+# 🐱 Kitty Glow - Sistema E-Commerce Django
+
+Sistema completo de comercio electrónico desarrollado con Django 5.2.7 que incluye gestión de productos, autenticación avanzada, sistema de roles y notificaciones por email.
+
+---
+
+## 📋 Tabla de Contenidos
+
+1. [Características Principales](#-características-principales)
+2. [Requisitos del Sistema](#-requisitos-del-sistema)
+3. [Instalación Rápida](#-instalación-rápida)
+4. [Estructura del Proyecto](#-estructura-del-proyecto)
+5. [Configuración de Base de Datos](#-configuración-de-base-de-datos)
+6. [Sistema de Autenticación](#-sistema-de-autenticación)
+7. [Gestión de Cuentas de Usuario](#-gestión-de-cuentas-de-usuario)
+8. [Notificaciones por Email](#-notificaciones-por-email)
+9. [Modelos de Datos](#-modelos-de-datos)
+10. [Comandos Útiles](#-comandos-útiles)
+11. [Solución de Problemas](#-solución-de-problemas)
+12. [Seguridad](#-seguridad)
+
+---
+
+## ✨ Características Principales
+
+### 🛍️ E-Commerce
+- Gestión completa de catálogo de productos
+- Sistema de categorías para productos
+- Procesamiento de pedidos y carrito de compras
+- Reseñas y calificaciones de productos
+- Panel de administración Django
+
+### 🔐 Autenticación Avanzada
+- **Login flexible**: Inicio de sesión con email o nombre de usuario
+- Registro con verificación de email
+- Validación estricta de contraseñas (8 requisitos de seguridad)
+- Restablecimiento de contraseña por email
+- Sistema de roles (Admin, Usuario, Moderador, Invitado)
+- Sesiones configurables (30 min de inactividad)
+- Historial de inicios de sesión
+- **Cambio de contraseña desde el perfil**
+  - Requiere contraseña actual para mayor seguridad
+  - Validación estricta de nueva contraseña (8 requisitos)
+  - Validación ANTES de cerrar sesión
+  - Cierre de sesión automático después del cambio
+  - Notificación por email con detalles del cambio
+- **Gestión de sesiones activas**
+  - Detección automática de múltiples inicios de sesión
+  - Vista completa de todos los dispositivos conectados
+  - Información detallada: IP, navegador, SO, última actividad
+  - Cierre remoto de sesiones individuales
+  - Cierre masivo de todas las sesiones excepto la actual
+  - Protección contra cierre accidental de sesión actual
+  - Auto-actualización cada 30 segundos
+  - Limpieza automática de sesiones inactivas (+30 días)
+
+### 🗑️ Gestión de Cuentas
+- **Eliminación con período de gracia (30 días)**
+  - Desactivación inmediata con opción de cancelar
+  - Reactivación automática al iniciar sesión
+  - Email de notificación con fecha de eliminación
+  
+- **Eliminación inmediata**
+  - Sin posibilidad de recuperación
+  - Múltiples confirmaciones de seguridad
+  - Email de confirmación
+  
+- **Exportación de datos en JSON**
+  - Información personal completa
+  - Historial de sesiones (últimas 50)
+  - Descarga instantánea
+
+### 📧 Notificaciones por Email
+- Login desde nuevo dispositivo
+- Cambio de contraseña
+- Eliminación/desactivación de cuenta
+- Verificación de email
+- Diseño HTML profesional y responsive
+- **Texto plano en desarrollo** - sin HTML en la consola
+
+### 🔒 Seguridad
+- 7 capas de validación para eliminación de cuenta
+- Protección CSRF en todos los formularios
+- Tokens únicos para acciones críticas
+- Validación lado cliente y servidor
+- Rate limiting preparado
+
+### 🎨 Arquitectura Frontend
+- **Separación de responsabilidades**: HTML, CSS y JavaScript en archivos independientes
+- **Archivos estáticos optimizados**: CSS y JS externos para mejor cacheo
+- **Organización modular**: 
+  - 7 archivos CSS específicos por funcionalidad
+  - 8 archivos JavaScript con lógica separada
+- **Rendimiento mejorado**: Archivos estáticos cacheables por navegador
+- **Mantenibilidad**: Código centralizado y reutilizable
+
+---
+
+## 📦 Requisitos del Sistema
+
+- **Python**: 3.14+
+- **MySQL**: 8.0+ (opcional, puede usar SQLite)
+- **SO**: macOS, Linux o Windows
+
+### Dependencias Principales
+```
+Django==5.2.7
+mysqlclient==2.2.7
+mysql-connector-python==9.4.0
+PyMySQL==1.1.2
+```
+
+---
+
+## 🚀 Instalación Rápida
+
+### Opción 1: Scripts Automáticos (Recomendado)
+
+```bash
+# macOS/Linux
+chmod +x start_server.sh
+./start_server.sh
+
+# Windows
+start_server.bat
+
+# Python multiplataforma
+python start_server.py
+```
+
+Los scripts realizan automáticamente:
+- ✅ Detección y configuración de MySQL
+- ✅ Creación del entorno virtual
+- ✅ Instalación de dependencias
+- ✅ Ejecución de migraciones
+- ✅ Inicio del servidor
+- ✅ Apertura del navegador
+
+### Opción 2: Instalación Manual
+
+```bash
+# 1. Crear entorno virtual
+python -m venv .venv
+source .venv/bin/activate  # macOS/Linux
+.venv\Scripts\activate     # Windows
+
+# 2. Instalar dependencias
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# 3. Configurar base de datos (ver sección siguiente)
+
+# 4. Ejecutar migraciones
+python manage.py makemigrations
+python manage.py migrate
+
+# 5. Crear datos de prueba (opcional)
+python manage.py crear_datos_prueba
+
+# 6. Crear superusuario
+python manage.py createsuperuser
+
+# 7. Iniciar servidor
+python manage.py runserver
+```
+
+**Acceso**:
+- Aplicación: http://127.0.0.1:8000/
+- Admin: http://127.0.0.1:8000/admin/
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+kitty_project/
+├── kitty_glow/                      # Proyecto Django principal
+│   ├── settings.py                  # Configuración
+│   ├── local_settings.py            # Config. desarrollo
+│   ├── cloud_settings.py            # Config. producción
+│   ├── logging_settings.py          # Config. logs
+│   ├── urls.py                      # Rutas principales
+│   ├── wsgi.py / asgi.py           # Puntos de entrada
+│   ├── static/                      # Archivos estáticos globales
+│   │   └── js/
+│   │       ├── initializeDataTables.js
+│   │       └── themeBasedOnPreference.js
+│   └── templates/
+│       └── base.html                # Template base
+│
+├── accounts/                        # App de autenticación
+│   ├── models.py                    # CustomUser, UserRole, LoginHistory
+│   ├── views.py                     # Vistas de auth
+│   ├── forms.py                     # Formularios
+│   ├── validators.py                # Validador de contraseñas
+│   ├── admin.py                     # Admin personalizado
+│   ├── urls.py                      # Rutas de accounts
+│   ├── management/
+│   │   └── commands/
+│   │       └── delete_expired_accounts.py  # Limpieza automática
+│   ├── migrations/
+│   ├── static/
+│   │   └── accounts/
+│   │       ├── css/                 # Estilos específicos de accounts
+│   │       │   ├── active_sessions.css
+│   │       │   ├── auth.css
+│   │       │   ├── change_password.css
+│   │       │   ├── dashboard.css
+│   │       │   ├── delete_account.css
+│   │       │   ├── password_reset.css
+│   │       │   └── password_reset_confirm.css
+│   │       └── js/                  # Scripts específicos de accounts
+│   │           ├── active_sessions.js
+│   │           ├── auth.js
+│   │           ├── change_password.js
+│   │           ├── dashboard.js
+│   │           ├── delete_account.js
+│   │           ├── password_reset_confirm.js
+│   │           ├── register.js
+│   │           └── user-list.js
+│   └── templates/
+│       └── accounts/
+│           ├── login.html
+│           ├── register.html
+│           ├── dashboard.html
+│           ├── profile.html
+│           ├── delete_account.html
+│           ├── password_reset_request.html
+│           ├── password_reset_confirm.html
+│           └── emails/
+│               ├── verification_email.html
+│               ├── password_reset_email.html
+│               ├── login_notification.html
+│               ├── password_changed_notification.html
+│               ├── account_deleted_notification.html
+│               └── account_deactivation_notification.html
+│
+├── productos/                       # App de e-commerce
+│   ├── models.py                    # Producto, Categoria, etc.
+│   ├── views.py                     # Vistas públicas
+│   ├── views_crud.py                # Vistas CRUD (admin)
+│   ├── admin.py
+│   ├── migrations/
+│   ├── management/
+│   │   └── commands/
+│   │       └── crear_datos_prueba.py  # 15 productos de prueba
+│   ├── static/
+│   │   └── productos/
+│   └── templates/
+│       └── productos/
+├── SQL/MySQL/                       # Scripts SQL
+│   ├── Model/
+│   │   └── Database_Model.mwb
+│   └── Scripts/
+│       ├── CreateDB.sql
+│       ├── DropDB.sql
+│       ├── ModelDB.sql
+│       └── QueriesDB.sql
+│
+├── manage.py                        # Utilidad Django
+├── requirements.txt                 # Dependencias
+├── runtime.txt                      # Versión Python
+├── Procfile                         # Despliegue
+├── nixpacks.toml                   # Config Nixpacks
+│
+├── start_server.sh                  # Script inicio (macOS/Linux)
+├── start_server.bat                 # Script inicio (Windows)
+├── start_server.py                  # Script inicio (Python)
+├── start_server_backup.sh          # Backup del script
+│
+├── create_default_superuser.py     # Crear superuser automático
+├── verify_implementation.sh        # Verificar implementación
+│
+├── SEPARACION_CSS_JS.md            # Documentación separación CSS/JS
+├── .env                            # Variables de entorno (no versionado)
+├── .gitignore
+├── LICENSE
+└── README.md                       # Este archivo
+```
+
+---
+
+## 🗄️ Configuración de Base de Datos
+
+### MySQL (Configuración por Defecto)
+
+**Parámetros**:
+- Base de datos: `kitty_glow_db`
+- Host: `localhost`
+- Puerto: `3307`
+- Usuario: `root`
+- Password: `MySQL_3307`
+
+#### Configuración en macOS ARM (M1/M2/M3)
+
+Para macOS con chips Apple Silicon, se requieren variables de entorno específicas. Los scripts las configuran automáticamente, pero para configuración manual, agrega a `~/.zprofile`:
+
+```bash
+# MySQL Configuration
+export PATH="/usr/local/mysql/bin:$PATH"
+export MYSQLCLIENT_CFLAGS="-I/usr/local/mysql/include"
+export MYSQLCLIENT_LDFLAGS="-L/usr/local/mysql/lib -lmysqlclient"
+export PKG_CONFIG_PATH="/usr/local/mysql/lib/pkgconfig"
+export DYLD_LIBRARY_PATH="/usr/local/mysql/lib:$DYLD_LIBRARY_PATH"
+export DYLD_FALLBACK_LIBRARY_PATH="/usr/local/mysql/lib:$DYLD_FALLBACK_LIBRARY_PATH"
+```
+
+Luego recarga:
+```bash
+source ~/.zprofile
+```
+
+#### Instalación de MySQL
+
+```bash
+# macOS con Homebrew
+brew install mysql
+brew services start mysql
+
+# O descargar instalador oficial
+# https://dev.mysql.com/downloads/mysql/
+```
+
+### SQLite (Alternativa Simple)
+
+Para desarrollo sin MySQL, modifica `kitty_glow/settings.py`:
+
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+```
+
+**Ventajas de SQLite**:
+- ✅ Sin instalación adicional
+- ✅ Sin configuración de variables
+- ✅ Base de datos en un solo archivo
+- ✅ Perfecto para desarrollo
+
+---
+
+## 🔐 Sistema de Autenticación
+
+### Login Flexible: Email o Username
+
+El sistema permite iniciar sesión usando **email o nombre de usuario** de forma automática:
+
+**Características**:
+- ✅ **Detección automática**: No requiere selector manual
+- ✅ **Una sola caja de texto**: Mejora la experiencia de usuario
+- ✅ **Seguridad preservada**: No revela si email/username existe
+- ✅ **Compatible**: Funciona con todo el sistema de autenticación Django
+
+**Cómo funciona**:
+```python
+# El usuario puede ingresar cualquiera de estos:
+"usuario123"           # Username → se usa directamente
+"user@example.com"     # Email → se busca el username asociado
+
+# El sistema detecta automáticamente si hay '@' en el input
+# y convierte el email a username antes de autenticar
+```
+
+**Ejemplo de uso**:
+```
+Usuario puede hacer login con:
+  • Username: "juan_perez"
+  • Email:    "juan@example.com"
+
+Ambas opciones son válidas y funcionan correctamente ✅
+```
+
+**Seguridad**:
+- Mensaje genérico de error: "Credenciales inválidas"
+- No revela si el email o username existe en la base de datos
+- Registra todos los intentos en `LoginHistory` (exitosos y fallidos)
+
+### Validación de Contraseñas
+
+Validador personalizado con **8 requisitos estrictos**:
+
+1. ✅ **Longitud**: 8-20 caracteres
+2. ✅ **Letra mayúscula**: Al menos una (A-Z)
+3. ✅ **Letra minúscula**: Al menos una (a-z)
+4. ✅ **Carácter especial**: Al menos uno (`!¡@#$%^&*.-_+(){}[]:;<>?,/\|~`)
+5. ✅ **Sin espacios**: No se permiten espacios en blanco ni emojis
+6. ✅ **Diferente a la anterior**: Debe ser diferente a la contraseña actual (al cambiar/restablecer)
+7. ✅ **No similar a datos personales**: No puede ser similar a username, email o nombre
+8. ✅ **Sin caracteres consecutivos**: No permite patrones repetitivos como:
+   - Caracteres idénticos: `aaa`, `111`, `AAA`, `!!!`
+   - Secuencias alfabéticas: `abc`, `xyz`, `ABC`, `XYZ`
+   - Secuencias numéricas: `123`, `789`, `456`, `234`
+
+**Ejemplos de contraseñas válidas**: `Kitty@2024`, `Glow@2w4x`, `Pass@1w4r`
+
+**Ejemplos de contraseñas inválidas**:
+- `Pass@aaa1` ❌ (caracteres idénticos consecutivos)
+- `Pass@123` ❌ (secuencia numérica consecutiva)
+- `Pass@abc` ❌ (secuencia alfabética consecutiva)
+- `Andres@2024` ❌ (similar al nombre del usuario)
+
+**Validación en tiempo real**: 
+- Templates de registro y restablecimiento incluyen validación JavaScript
+- Feedback visual instantáneo (indicadores verdes/rojos)
+- Mensajes de ayuda claros y específicos
+
+### Verificación de Email
+
+**Flujo**:
+1. Usuario se registra → cuenta creada con `is_active=False`
+2. Email de verificación enviado automáticamente
+3. Usuario hace clic en enlace único con token
+4. Cuenta activada → puede iniciar sesión
+
+**Template**: `accounts/templates/accounts/emails/verification_email.html`
+
+### Restablecimiento de Contraseña
+
+**Flujo**:
+1. Usuario hace clic en "¿Olvidaste tu contraseña?"
+2. Ingresa su email
+3. Recibe email con enlace único (válido 1 hora)
+4. Crea nueva contraseña (con validación en tiempo real)
+5. Recibe email de confirmación de cambio
+
+**Templates**:
+- `password_reset_request.html` - Formulario de solicitud
+- `password_reset_confirm.html` - Formulario de nueva contraseña
+- `emails/password_reset_email.html` - Email con enlace
+
+### Configuración de Sesiones
+
+```python
+SESSION_COOKIE_AGE = 1800              # 30 minutos
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True # Expira al cerrar navegador
+SESSION_SAVE_EVERY_REQUEST = True      # Renueva con cada request
+```
+
+**Comportamiento**:
+- Sin "Recordarme": expira al cerrar navegador o 30 min inactividad
+- Con "Recordarme": dura 2 semanas
+
+### Sistema de Roles
+
+**Roles disponibles**:
+- `ADMIN`: Administrador del sistema
+- `USER`: Usuario estándar
+- `MODERATOR`: Moderador
+- `GUEST`: Invitado
+
+**Métodos de verificación**:
+```python
+user.is_admin()       # True si es admin
+user.is_moderator()   # True si es moderador
+user.get_role_display()  # Nombre del rol
+```
+
+### URLs de Autenticación
+
+```
+/accounts/login/                          # Iniciar sesión (email o username)
+/accounts/register/                       # Registro
+/accounts/logout/                         # Cerrar sesión
+/accounts/verify-email/<uidb64>/<token>/  # Verificar email
+/accounts/reset-password/                 # Solicitar reset
+/accounts/reset-password/<uidb64>/<token>/ # Crear nueva contraseña
+/accounts/dashboard/                      # Panel usuario
+/accounts/admin/dashboard/                # Panel admin
+/accounts/profile/                        # Editar perfil
+/accounts/change-password/                # Cambiar contraseña (con logout)
+/accounts/active-sessions/                # Ver y gestionar sesiones activas
+/accounts/close-session/<id>/             # Cerrar sesión específica
+/accounts/close-all-sessions/             # Cerrar todas las sesiones excepto actual
+/accounts/users/                          # Lista usuarios (admin)
+```
+
+---
+
+## 🗑️ Gestión de Cuentas de Usuario
+
+### Eliminación con Período de Gracia (30 días)
+
+**Características**:
+- ✅ Cuenta desactivada inmediatamente (no puede iniciar sesión)
+- ✅ Eliminación automática después de 30 días
+- ✅ Email de notificación con fecha de eliminación
+- ✅ **Cancelación sencilla**: solo iniciar sesión antes de la fecha
+- ✅ Reactivación automática al hacer login
+
+**Proceso**:
+1. Usuario va a Perfil → "Zona de Peligro" → "Eliminar mi cuenta"
+2. Lee advertencias y consecuencias
+3. Ingresa contraseña
+4. Escribe "ELIMINAR MI CUENTA"
+5. Hace clic en "Desactivar (30 días de gracia)"
+6. Confirma en alerta JavaScript
+7. Cuenta desactivada + email enviado + logout
+8. Usuario puede cancelar iniciando sesión en cualquier momento
+
+**Campos del modelo**:
+```python
+is_pending_deletion = BooleanField(default=False)
+deletion_requested_at = DateTimeField(null=True, blank=True)
+scheduled_deletion_date = DateTimeField(null=True, blank=True)
+```
+
+### Eliminación Inmediata
+
+**Características**:
+- ✅ Eliminación instantánea y permanente
+- ✅ Sin posibilidad de recuperación
+- ✅ Requiere confirmación adicional (checkbox)
+- ✅ Doble confirmación JavaScript
+- ✅ Email de notificación enviado
+
+**Proceso**:
+1. Mismo inicio que período de gracia
+2. Marca checkbox "Entiendo que es irreversible"
+3. Hace clic en "Eliminar Inmediatamente"
+4. Confirma en primera alerta
+5. Confirma en segunda alerta (más seria)
+6. Cuenta eliminada permanentemente
+
+### Exportación de Datos (JSON)
+
+**Información exportada**:
+```json
+{
+  "informacion_personal": {
+    "username": "...", "email": "...", 
+    "nombre": "...", "apellido": "...",
+    "telefono": "...", "fecha_nacimiento": "...",
+    "biografia": "...", "direccion": "...",
+    "ciudad": "...", "pais": "...", "codigo_postal": "..."
+  },
+  "informacion_cuenta": {
+    "fecha_registro": "...", 
+    "ultima_actualizacion": "...",
+    "email_verificado": true/false,
+    "rol": "...", "activo": true/false
+  },
+  "historial_sesiones": [
+    {"ip": "...", "navegador": "...", 
+     "fecha": "...", "exitoso": true/false}
+  ]
+}
+```
+
+**Acceso**: 
+- Botón en página de eliminación
+- URL directa: `/accounts/export-data/`
+- Nombre de archivo: `datos_usuario_[username]_[timestamp].json`
+
+### Seguridad de Eliminación
+
+**7 Capas de Validación**:
+1. ✅ Login requerido (`@login_required`)
+2. ✅ Protección CSRF (`@csrf_protect`)
+3. ✅ Verificación de contraseña
+4. ✅ Confirmación textual ("ELIMINAR MI CUENTA")
+5. ✅ Checkbox adicional (eliminación inmediata)
+6. ✅ Primera alerta JavaScript
+7. ✅ Segunda alerta (eliminación inmediata)
+
+### Comando de Mantenimiento
+
+**Eliminar cuentas vencidas**:
+```bash
+python manage.py delete_expired_accounts
+```
+
+Este comando:
+- Busca cuentas con `is_pending_deletion=True` y fecha vencida
+- Envía email final de notificación
+- Elimina la cuenta permanentemente
+- Muestra resumen de cuentas eliminadas
+
+**Configurar en crontab** (producción):
+```bash
+crontab -e
+
+# Agregar:
+0 2 * * * cd /ruta/kitty_project && source .venv/bin/activate && python manage.py delete_expired_accounts
+```
+
+### URLs de Gestión de Cuenta
+
+```
+/accounts/delete-account/     # Página de eliminación
+/accounts/cancel-deletion/    # Cancelar eliminación programada
+/accounts/export-data/        # Descargar datos en JSON
+```
+
+---
+
+## 📧 Notificaciones por Email
+
+### Emails Implementados
+
+#### 1. **Verificación de Email** (Registro)
+- **Cuándo**: Al registrar nueva cuenta
+- **Contenido**: Enlace de verificación único con token
+- **Validez**: 24 horas (informado), real ~3 días
+- **Template**: `emails/verification_email.html`
+
+#### 2. **Restablecimiento de Contraseña**
+- **Cuándo**: Al solicitar "¿Olvidaste tu contraseña?"
+- **Contenido**: Enlace único para crear nueva contraseña
+- **Validez**: 1 hora (informado)
+- **Template**: `emails/password_reset_email.html`
+
+#### 3. **Notificación de Login**
+- **Cuándo**: Cada inicio de sesión exitoso
+- **Contenido**: 
+  - Fecha y hora del login
+  - Dirección IP
+  - Información del navegador/dispositivo
+  - Advertencia si no fue el usuario
+- **Template**: `emails/login_notification.html`
+- **Función**: `send_login_notification()`
+
+#### 4. **Cambio de Contraseña**
+- **Cuándo**: Al cambiar contraseña (reset o desde perfil)
+- **Contenido**:
+  - Confirmación del cambio
+  - Fecha, hora, IP, dispositivo
+  - Consejos de seguridad
+  - Advertencia crítica si no fue el usuario
+- **Template**: `emails/password_changed_notification.html`
+- **Función**: `send_password_changed_notification()`
+
+#### 5. **Desactivación de Cuenta** (Período de Gracia)
+- **Cuándo**: Al desactivar cuenta con período de 30 días
+- **Contenido**:
+  - Fecha de desactivación
+  - Fecha de eliminación programada
+  - Días restantes
+  - Botón para reactivar
+  - Instrucciones de cancelación
+- **Template**: `emails/account_deactivation_notification.html`
+- **Función**: `send_account_deactivation_notification()`
+
+#### 6. **Eliminación de Cuenta**
+- **Cuándo**: Al eliminar cuenta (inmediata o después de 30 días)
+- **Contenido**:
+  - Confirmación de eliminación permanente
+  - Fecha y hora
+  - Mensaje de despedida
+  - Advertencia de seguridad
+- **Template**: `emails/account_deleted_notification.html`
+- **Función**: `send_account_deletion_notification()`
+
+### Configuración de Email
+
+#### Desarrollo (IS_DEPLOYED=False)
+```python
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+```
+Los emails se muestran en la **consola/terminal**.
+
+#### Producción (IS_DEPLOYED=True)
+```python
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'afgr1990@gmail.com'
+EMAIL_HOST_PASSWORD = 'wdptedrqzibfqcpa'  # App Password
+```
+
+**Configurar en `.env`**:
+```env
+IS_DEPLOYED=False  # True para producción
+EMAIL_HOST_USER=afgr1990@gmail.com
+EMAIL_HOST_PASSWORD=wdptedrqzibfqcpa
+```
+
+### Características de los Emails
+
+- ✅ **Diseño HTML profesional** con estilos inline
+- ✅ **Responsive** - compatible con todos los clientes
+- ✅ **Texto plano en desarrollo** - emails limpios en la terminal sin HTML
+- ✅ **HTML completo en producción** - con estilos, colores y formato visual
+- ✅ **Seguridad visual** - íconos, colores, advertencias
+- ✅ **Información detallada** - fecha, hora, IP, dispositivo
+- ✅ **Consejos de seguridad** incluidos
+- ✅ **Fail-safe** - errores no interrumpen operaciones principales
+
+### Formato de Emails
+
+El sistema envía **dos versiones** de cada email mediante la función `send_html_email()`:
+
+#### 📧 **En DESARROLLO** (`IS_DEPLOYED=False`)
+- Usa `send_mail()` simple
+- Envía **SOLO texto plano** a la consola
+- Sin código HTML visible
+- Contenido limpio y legible
+
+**Ejemplo en consola**:
+```
+Notificación de inicio de sesión
+
+Hola Juan Pérez,
+
+Se ha detectado un inicio de sesión en tu cuenta:
+
+  • Fecha: 04/11/2025 a las 15:30:00
+  • IP: 192.168.1.100
+  • Navegador: Chrome/120.0
+
+Si no fuiste tú, cambia tu contraseña inmediatamente.
+
+Saludos,
+Equipo Kitty Glow
+```
+
+#### 🌐 **En PRODUCCIÓN** (`IS_DEPLOYED=True`)
+- Usa `EmailMultiAlternatives`
+- Envía **formato multipart/alternative**:
+  - **Parte 1**: Texto plano (fallback)
+  - **Parte 2**: HTML con estilos completos
+- Clientes modernos (Gmail, Outlook) muestran versión HTML
+- Clientes antiguos muestran versión de texto plano
+
+**Estructura del email en producción**:
+```
+Content-Type: multipart/alternative
+
+--boundary--
+Content-Type: text/plain
+[Versión de texto plano]
+
+--boundary--
+Content-Type: text/html
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .header { background: linear-gradient(#667eea, #764ba2); }
+      .button { background: #667eea; color: white; }
+    </style>
+  </head>
+  <body>
+    <!-- Email con diseño profesional, colores, botones -->
+  </body>
+</html>
+--boundary--
+```
+
+**Conversión automática HTML → Texto Plano**:
+- Función `html_to_plain_text()` en `accounts/views.py`
+- Elimina tags HTML: `<p>`, `<strong>`, `<div>`, etc.
+- Convierte `<li>` a bullets (•)
+- Preserva saltos de línea y estructura
+- Limpia espacios múltiples
+
+---
+
+## 🗂️ Modelos de Datos
+
+### Accounts App
+
+#### **CustomUser**
+```python
+# Campos de AbstractUser + adicionales:
+role = ForeignKey(UserRole)              # Rol del usuario
+phone_number = CharField                  # Teléfono
+birth_date = DateField                    # Fecha de nacimiento
+avatar = ImageField                       # Foto de perfil
+bio = TextField                           # Biografía
+address / city / country / postal_code   # Dirección completa
+email_verified = BooleanField            # Email verificado
+last_login_ip = GenericIPAddressField    # Última IP
+is_pending_deletion = BooleanField       # Pendiente eliminación
+deletion_requested_at = DateTimeField    # Fecha solicitud
+scheduled_deletion_date = DateTimeField  # Fecha programada
+created_at / updated_at                  # Timestamps
+```
+
+#### **UserRole**
+```python
+name = CharField(choices=ROLE_CHOICES)   # ADMIN, USER, MODERATOR, GUEST
+description = TextField                   # Descripción del rol
+permissions = JSONField                   # Permisos personalizados
+created_at / updated_at                  # Timestamps
+```
+
+#### **LoginHistory**
+```python
+user = ForeignKey(CustomUser)            # Usuario
+ip_address = GenericIPAddressField       # IP del login
+user_agent = CharField                    # Navegador/dispositivo
+login_time = DateTimeField               # Fecha/hora de login
+logout_time = DateTimeField              # Fecha/hora de logout
+success = BooleanField                   # Login exitoso/fallido
+```
+
+#### **ActiveSession**
+```python
+user = ForeignKey(CustomUser)            # Usuario
+session_key = CharField(unique=True)     # Clave de sesión Django
+ip_address = GenericIPAddressField       # IP de la sesión
+user_agent = TextField                    # User-Agent completo
+device_info = CharField                   # Tipo de dispositivo (Desktop, Mobile, Tablet)
+browser_info = CharField                  # Navegador (Chrome, Firefox, Safari, etc.)
+location = CharField                      # Ubicación (opcional)
+created_at = DateTimeField               # Inicio de sesión
+last_activity = DateTimeField            # Última actividad
+is_current = BooleanField                # Marca sesión actual
+
+# Métodos
+get_device_icon()                        # Retorna ícono FontAwesome
+get_browser_name()                       # Extrae nombre del navegador
+get_os_name()                            # Extrae nombre del SO
+```
+
+### Productos App
+
+#### **Categoria**
+```python
+nombre = CharField(max_length=100)
+descripcion = TextField
+```
+
+#### **Producto**
+```python
+nombre = CharField(max_length=200)
+descripcion = TextField
+precio = DecimalField(max_digits=10, decimal_places=2)
+stock = IntegerField
+imagen = ImageField
+categorias = ManyToManyField(Categoria)
+fecha_creacion = DateTimeField
+activo = BooleanField
+```
+
+#### **Pedido**
+```python
+usuario = ForeignKey(CustomUser)
+fecha_pedido = DateTimeField
+total = DecimalField
+estado = CharField  # PENDIENTE, PROCESANDO, ENVIADO, ENTREGADO
+```
+
+#### **DetallePedido**
+```python
+pedido = ForeignKey(Pedido)
+producto = ForeignKey(Producto)
+cantidad = IntegerField
+precio_unitario = DecimalField
+```
+
+#### **Reseña**
+```python
+producto = ForeignKey(Producto)
+usuario = ForeignKey(CustomUser)
+calificacion = IntegerField(1-5)
+comentario = TextField
+fecha_reseña = DateTimeField
+```
+
+---
+
+## ⚙️ Comandos Útiles
+
+### Gestión del Proyecto
+
+```bash
+# Activar entorno virtual
+source .venv/bin/activate  # macOS/Linux
+.venv\Scripts\activate     # Windows
+
+# Ejecutar servidor
+python manage.py runserver
+
+# Puerto específico
+python manage.py runserver 8080
+```
+
+### Migraciones
+
+```bash
+# Crear migraciones
+python manage.py makemigrations
+python manage.py makemigrations accounts
+python manage.py makemigrations productos
+
+# Aplicar migraciones
+python manage.py migrate
+
+# Ver SQL de una migración
+python manage.py sqlmigrate accounts 0001
+
+# Ver estado de migraciones
+python manage.py showmigrations
+```
+
+### Administración
+
+```bash
+# Crear superusuario
+python manage.py createsuperuser
+
+# O automáticamente (desarrollo)
+python create_default_superuser.py
+
+# Shell de Django
+python manage.py shell
+
+# Shell de base de datos
+python manage.py dbshell
+```
+
+### Datos de Prueba
+
+```bash
+# Crear 15 productos en 5 categorías
+python manage.py crear_datos_prueba
+```
+
+### Gestión de Cuentas
+
+```bash
+# Eliminar cuentas vencidas (período de gracia)
+python manage.py delete_expired_accounts
+
+# Verificar implementación
+./verify_implementation.sh
+```
+
+### Pruebas
+
+```bash
+# Todas las pruebas
+python manage.py test
+
+# App específica
+python manage.py test accounts
+python manage.py test productos
+
+# Con verbosidad
+python manage.py test --verbosity=2
+```
+
+### Archivos Estáticos
+
+```bash
+# Recolectar archivos estáticos
+python manage.py collectstatic
+
+# Limpiar archivos estáticos
+python manage.py collectstatic --clear
+```
+
+**Estructura de archivos estáticos**:
+```
+accounts/static/accounts/
+├── css/
+│   ├── active_sessions.css       # Estilos para sesiones activas
+│   ├── auth.css                  # Estilos de autenticación
+│   ├── change_password.css       # Estilos cambio de contraseña
+│   ├── dashboard.css             # Estilos del dashboard
+│   ├── delete_account.css        # Estilos eliminación de cuenta
+│   ├── password_reset.css        # Estilos reset de contraseña
+│   └── password_reset_confirm.css # Estilos confirmación reset
+└── js/
+    ├── active_sessions.js        # Auto-actualización sesiones
+    ├── auth.js                   # Lógica de autenticación
+    ├── change_password.js        # Validación cambio contraseña
+    ├── dashboard.js              # Funcionalidad dashboard
+    ├── delete_account.js         # Validación eliminación cuenta
+    ├── password_reset_confirm.js # Validación en tiempo real (8 requisitos)
+    ├── register.js               # Validación de registro
+    └── user-list.js              # Gestión de lista de usuarios
+```
+
+**Ventajas de la separación CSS/JS**:
+- ✅ **Cacheo**: Navegadores pueden cachear archivos estáticos
+- ✅ **Mantenibilidad**: Código organizado y fácil de actualizar
+- ✅ **Reutilización**: Estilos y scripts compartibles entre templates
+- ✅ **Rendimiento**: Posibilidad de minificar y comprimir
+- ✅ **Legibilidad**: Templates HTML más limpios
+
+**Nota**: Los templates de email (`emails/*.html`) mantienen CSS inline porque los clientes de correo no soportan archivos externos.
+
+---
+
+## 🔧 Solución de Problemas
+
+### Error: "Library not loaded: @rpath/libmysqlclient.24.dylib"
+
+**Causa**: Bibliotecas MySQL no configuradas en macOS.
+
+**Solución rápida**:
+```bash
+./start_server.sh  # Configura automáticamente
+```
+
+**Solución manual**:
+```bash
+# 1. Instalar MySQL
+brew install mysql
+
+# 2. Configurar variables en ~/.zprofile (ver sección MySQL)
+
+# 3. Reinstalar mysqlclient
+source .venv/bin/activate
+pip uninstall mysqlclient -y
+pip install mysqlclient --no-cache-dir
+```
+
+### Error: "No module named 'MySQLdb'"
+
+```bash
+source .venv/bin/activate
+pip install mysqlclient --no-cache-dir
+```
+
+### Error: "mysql_config not found"
+
+```bash
+brew install mysql
+# O descargar: https://dev.mysql.com/downloads/mysql/
+```
+
+### Entorno Virtual Corrupto
+
+```bash
+rm -rf .venv
+./start_server.sh  # Recrea automáticamente
+```
+
+### Emails No Se Envían (Desarrollo)
+
+**Verificar**: Los emails se muestran en la **consola**, no en inbox.
+
+```bash
+# En desarrollo, ver terminal donde corre el servidor
+python manage.py runserver
+# Los emails aparecerán aquí
+```
+
+### Error al Hacer Migraciones de Accounts
+
+Si ya tienes datos en la BD y agregaste campos nuevos:
+
+```bash
+# Opción 1: Eliminar BD y recrear (desarrollo)
+python manage.py flush
+
+# Opción 2: Migración manual
+python manage.py makemigrations accounts
+# Cuando pregunte, proporcionar valores por defecto
+python manage.py migrate accounts
+```
+
+---
+
+## 🔒 Seguridad
+
+### Variables de Entorno
+
+**IMPORTANTE**: Nunca versionar credenciales. Usar `.env`:
+
+```env
+# .env (no versionado)
+SECRET_KEY=tu-secret-key-aqui
+IS_DEPLOYED=False
+DEBUG=True
+
+# Base de datos
+DATABASE_NAME=kitty_glow_db
+DATABASE_USER=root
+DATABASE_PASSWORD=MySQL_3307
+DATABASE_HOST=localhost
+DATABASE_PORT=3307
+
+# Email
+EMAIL_HOST_USER=afgr1990@gmail.com
+EMAIL_HOST_PASSWORD=wdptedrqzibfqcpa
+```
+
+### Configuración de Producción
+
+Antes de desplegar:
+
+```python
+# settings.py
+SECRET_KEY = env('SECRET_KEY')  # Generar nueva
+DEBUG = False
+ALLOWED_HOSTS = ['tu-dominio.com', 'www.tu-dominio.com']
+
+# Seguridad HTTPS
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+```
+
+### Checklist de Seguridad
+
+- [ ] `SECRET_KEY` única y segura
+- [ ] `DEBUG = False` en producción
+- [ ] `ALLOWED_HOSTS` configurado
+- [ ] HTTPS habilitado
+- [ ] Variables de entorno para credenciales
+- [ ] Validación de contraseñas estricta
+- [ ] Protección CSRF habilitada
+- [ ] Rate limiting implementado
+- [ ] Logs de seguridad configurados
+- [ ] Backups automáticos de BD
+
+---
+
+## 📚 Recursos Adicionales
+
+### Documentación
+- [Django 5.2](https://docs.djangoproject.com/en/5.2/)
+- [MySQL Documentation](https://dev.mysql.com/doc/)
+- [Bootstrap 5](https://getbootstrap.com/docs/5.0/)
+- [Font Awesome](https://fontawesome.com/docs)
+
+### Endpoints Principales
+
+```
+# Públicas
+/                           # Home
+/productos/                 # Catálogo
+/productos/<id>/            # Detalle producto
+/categorias/                # Categorías
+
+# Autenticación
+/accounts/login/            # Login
+/accounts/register/         # Registro
+/accounts/dashboard/        # Dashboard usuario
+
+# Admin
+/admin/                     # Django admin
+/accounts/admin/dashboard/  # Dashboard admin
+/accounts/users/            # Gestión usuarios
+/productos/admin/           # CRUD productos
+
+# Gestión de cuenta
+/accounts/profile/          # Perfil
+/accounts/change-password/  # Cambiar contraseña
+/accounts/active-sessions/  # Ver y gestionar sesiones activas
+/accounts/close-session/<id>/     # Cerrar sesión específica
+/accounts/close-all-sessions/     # Cerrar todas excepto actual
+/accounts/delete-account/   # Eliminar cuenta
+/accounts/export-data/      # Exportar datos
+```
+
+---
+
+## 🤝 Contribución
+
+1. Fork el proyecto
+2. Crea una rama: `git checkout -b feature/nueva-funcionalidad`
+3. Commit: `git commit -m 'Agrega nueva funcionalidad'`
+4. Push: `git push origin feature/nueva-funcionalidad`
+5. Abre un Pull Request
+
+---
+
+## 📄 Licencia
+
+Este proyecto es de código abierto y está disponible para uso educativo y de desarrollo.
+
+---
+
+## 📞 Soporte
+
+### Comandos de Diagnóstico
+
+```bash
+# Ver versión de Python
+python --version
+
+# Ver paquetes instalados
+pip list
+
+# Ver variables de entorno MySQL
+echo $DYLD_LIBRARY_PATH
+
+# Probar conexión a MySQL
+mysql -u root -p
+
+# Test de MySQLdb
+python -c "import MySQLdb; print('✅ MySQLdb OK')"
+```
+
+---
+
+**Desarrollado con ❤️ usando Django 5.2.7**
+
+**Última actualización**: 4 de noviembre de 2025  
+**Versión**: 1.0.7  
+**Autor**: Kitty Glow Team
+
+---
+
+## 📝 Registro de Cambios
+
+### Versión 1.0.7 (4 de noviembre de 2025)
+- ✅ **Mejorado**: Separación de CSS y JavaScript de templates HTML
+  - **Organización de archivos estáticos mejorada**
+    * CSS y JavaScript movidos a archivos externos
+    * Mejor cacheo por parte de los navegadores
+    * Código más mantenible y reutilizable
+  - **Archivos CSS creados** (5 nuevos):
+    * `active_sessions.css` - Estilos para gestión de sesiones activas
+    * `change_password.css` - Estilos para cambio de contraseña
+    * `delete_account.css` - Estilos para eliminación de cuenta
+    * `password_reset.css` - Estilos para solicitud de restablecimiento
+    * `password_reset_confirm.css` - Estilos para confirmación de nueva contraseña
+  - **Archivos JavaScript creados** (4 nuevos):
+    * `active_sessions.js` - Auto-actualización de sesiones cada 30s
+    * `change_password.js` - Toggle de contraseñas y validación
+    * `delete_account.js` - Validación de formulario y confirmaciones
+    * `password_reset_confirm.js` - Validación en tiempo real de 8 requisitos
+  - **Templates actualizados** (5 archivos):
+    * `password_reset_request.html` - Referencias CSS externas
+    * `password_reset_confirm.html` - Referencias CSS/JS externas
+    * `delete_account.html` - Referencias CSS/JS externas
+    * `change_password.html` - Referencias CSS/JS externas
+    * `active_sessions.html` - Referencias CSS/JS externas
+  - **Beneficios obtenidos**:
+    * ~584 líneas de código reorganizadas
+    * Separación clara de responsabilidades (HTML/CSS/JS)
+    * Archivos estáticos cacheables
+    * Templates HTML más limpios y legibles
+    * Preparado para minificación y compresión
+  - **Comando ejecutado**: `collectstatic` (9 nuevos archivos recolectados)
+  - **Documentación**: `SEPARACION_CSS_JS.md` con detalles completos
+  - **Nota**: Templates de email mantienen CSS inline (requerido por clientes de correo)
+
+### Versión 1.0.6 (4 de noviembre de 2025)
+- ✅ **Mejorado**: Sistema de validación de contraseñas ampliado a 8 requisitos
+  - **Nuevo requisito 1.8**: Detección de caracteres consecutivos
+    * Detecta caracteres idénticos: `aaa`, `111`, `AAA`
+    * Detecta secuencias alfabéticas: `abc`, `xyz`, `ABC`
+    * Detecta secuencias numéricas: `123`, `789`, `456`
+  - Actualizado `CustomPasswordValidator` en `accounts/validators.py`
+  - Nuevas funciones de validación:
+    * `_has_identical_consecutive()` - Regex para caracteres idénticos
+    * `_has_alphabetic_sequence()` - Loop para secuencias alfabéticas
+    * `_has_numeric_sequence()` - Loop para secuencias numéricas
+  - Normalización de texto con `unicodedata` (insensible a acentos)
+  - **Templates actualizados** con lista completa de requisitos:
+    * `register.html` - 7 requisitos (1.1-1.5, 1.7-1.8)
+    * `change_password.html` - 8 requisitos completos (1.1-1.8)
+    * `password_reset_confirm.html` - 9 items (8 requisitos + confirmación)
+  - **Validación JavaScript** en tiempo real para password_reset_confirm.html
+    * Función `hasConsecutiveChars()` replica lógica del backend
+    * Indicadores visuales (verde/rojo) para cada requisito
+    * Detección instantánea de patrones consecutivos
+  - **Testing exhaustivo**:
+    * Nuevo script: `test_consecutive_chars.py` (27 tests, 100% pass)
+    * Script de demostración: `demo_validacion_pre_logout.py` (6 casos)
+  - **Documentación completa**:
+    * `ACTUALIZACION_TEMPLATES_PASSWORDS.md` - Cambios en templates
+    * `VERIFICACION_CAMBIO_PASSWORD_COMPLETA.md` - Flujo técnico
+    * `CONFIRMACION_VALIDACION_PRE_LOGOUT.md` - Verificación final
+  - **Verificado**: Validación ocurre ANTES de logout en cambio de contraseña
+    * Doble capa: formulario + vista
+    * logout() solo se ejecuta tras validación exitosa
+    * 6 casos de prueba demuestran comportamiento correcto
+  - **Configuración de archivos estáticos** corregida
+    * Eliminadas rutas duplicadas de `STATICFILES_DIRS`
+    * Django auto-descubre carpetas static de las apps
+    * Sin warnings en `collectstatic`
+
+### Versión 1.0.5 (4 de noviembre de 2025)
+- ✅ **Nuevo**: Sistema de gestión de sesiones activas
+  - Nuevo modelo `ActiveSession` en `accounts/models.py`
+  - Nuevo middleware `ActiveSessionMiddleware` en `accounts/middleware.py`
+  - 3 nuevas vistas: `active_sessions_view()`, `close_session_view()`, `close_all_sessions_view()`
+  - Template completo: `accounts/templates/accounts/active_sessions.html`
+  - Admin: `ActiveSessionAdmin` registrado
+  - **Detección automática** de dispositivos, navegador, OS, IP
+  - **Lista visual** de todas las sesiones activas del usuario
+  - **Información detallada**: IP, navegador, sistema operativo, última actividad
+  - **Cierre individual** de sesiones sospechosas
+  - **Cierre masivo** de todas las sesiones excepto la actual
+  - **Protección**: No permite cerrar la sesión actual desde la vista
+  - **Auto-actualización**: La página se recarga cada 30 segundos
+  - **Limpieza automática**: Sesiones con +30 días de inactividad
+  - Middleware actualiza sesiones en cada request
+  - Migración: `0003_activesession.py`
+  - URLs: `/accounts/active-sessions/`, `/accounts/close-session/<id>/`, `/accounts/close-all-sessions/`
+  - Documento de pruebas: `PRUEBA_SESIONES_ACTIVAS.md`
+
+### Versión 1.0.4 (4 de noviembre de 2025)
+- ✅ **Nuevo**: Cambio de contraseña desde el perfil con seguridad mejorada
+  - Nuevo formulario `ChangePasswordForm` en `accounts/forms.py`
+  - Nueva vista `change_password_view()` en `accounts/views.py`
+  - Nueva URL `/accounts/change-password/`
+  - Template completo: `accounts/templates/accounts/change_password.html`
+  - **Requiere contraseña actual** para autorizar el cambio
+  - **Validación estricta** de nueva contraseña (7 requisitos)
+  - **Cierre de sesión automático** después del cambio por seguridad
+  - **Notificación por email** con detalles (fecha, hora, IP, navegador)
+  - Interfaz con mostrar/ocultar contraseña
+  - Validación en tiempo real (JavaScript)
+  - Confirmación antes de enviar
+  - Sección de seguridad agregada en perfil
+  - Consejos de seguridad incluidos
+  - Documento de pruebas: `PRUEBA_CAMBIO_PASSWORD.md`
+
+### Versión 1.0.3 (4 de noviembre de 2025)
+- ✅ **Verificado**: Sistema de emails en producción
+  - Confirmado envío de HTML completo en producción
+  - Nueva función `send_html_email()` wrapper
+  - Lógica condicional basada en `IS_DEPLOYED`
+  - Producción: `EmailMultiAlternatives` con HTML + texto plano
+  - Desarrollo: `send_mail()` solo con texto plano
+  - 6 funciones de email actualizadas con wrapper
+  - Documento de verificación: `VERIFICACION_EMAIL_PRODUCCION.md`
+  - Script de prueba: `test_email_production_simple.py`
+
+### Versión 1.0.2 (4 de noviembre de 2025)
+- ✅ **Mejorado**: Emails en texto plano para desarrollo
+  - Nueva función `html_to_plain_text()` en `accounts/views.py`
+  - Emails en consola ahora sin código HTML
+  - Conversión automática: HTML → Texto limpio
+  - Listas convertidas a bullets (•)
+  - Mantiene HTML profesional en producción
+  - 6 funciones de email actualizadas
+
+### Versión 1.0.1 (4 de noviembre de 2025)
+- ✅ **Nuevo**: Login flexible con email o nombre de usuario
+  - Detección automática del tipo de credencial
+  - Una sola caja de texto para mejorar UX
+  - Mantiene compatibilidad con sistema existente
+  - Seguridad preservada (no revela si credenciales existen)
+
+### Versión 1.0.0 (4 de noviembre de 2025)
+- ✅ Sistema de autenticación completo
+- ✅ Gestión de cuentas con eliminación (gracia 30 días)
+- ✅ Exportación de datos en JSON
+- ✅ 6 tipos de notificaciones por email
+- ✅ Sistema de productos y categorías
+- ✅ Panel de administración
+
