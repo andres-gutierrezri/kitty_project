@@ -522,30 +522,29 @@ def run_migrations(python_executable):
     # Finalmente crear superusuario
     create_default_superuser(python_executable)
     
-    # Verificar si existe el comando initialize_project
-    initialize_project_path = Path(__file__).parent / "accounts" / "management" / "commands" / "initialize_project.py"
+    # Verificar si existe el script initialize_project
+    initialize_project_path = Path(__file__).parent / "initialize_project.py"
     if initialize_project_path.exists():
         # Inicializar proyecto (roles y datos de prueba)
         print("🎯 Inicializando proyecto (roles y datos de prueba)...")
         try:
             result = subprocess.run([
                 str(python_executable),
-                "manage.py",
-                "initialize_project"
+                "initialize_project.py"
             ], cwd=Path(__file__).parent, capture_output=True, text=True)
             if result.returncode == 0:
                 if result.stdout:
                     print(result.stdout)
             else:
                 print("⚠️  Advertencia al inicializar proyecto")
-                print("   Puedes ejecutar manualmente: python manage.py initialize_project")
+                print("   Puedes ejecutar manualmente: python initialize_project.py")
                 if result.stderr:
                     print(f"   {result.stderr}")
         except Exception as e:
             print(f"⚠️  Advertencia al inicializar proyecto: {e}")
-            print("   Puedes ejecutar manualmente: python manage.py initialize_project")
+            print("   Puedes ejecutar manualmente: python initialize_project.py")
     else:
-        print("⚠️  El comando initialize_project.py no existe, omitiendo inicialización automática")
+        print("⚠️  El script initialize_project.py no existe, omitiendo inicialización automática")
         print("   Puedes crear roles manualmente: python manage.py create_roles")
         print("   Puedes crear datos de prueba: python manage.py crear_datos_prueba")
 

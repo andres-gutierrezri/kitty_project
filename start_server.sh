@@ -252,16 +252,16 @@ if [ $? -ne 0 ]; then
     echo "⚠️  Advertencia al crear superusuario (puede ser normal si ya existe)"
 fi
 
-# Verificar si existe el comando initialize_project
-if [ -f "accounts/management/commands/initialize_project.py" ]; then
+# Verificar si existe el script initialize_project
+if [ -f "initialize_project.py" ]; then
     echo "🎯 Inicializando proyecto (roles y datos de prueba)..."
-    .venv/bin/python manage.py initialize_project
+    .venv/bin/python initialize_project.py
     if [ $? -ne 0 ]; then
         echo "⚠️  Advertencia al inicializar proyecto"
-        echo "   Puedes ejecutar manualmente: python manage.py initialize_project"
+        echo "   Puedes ejecutar manualmente: python initialize_project.py"
     fi
 else
-    echo "⚠️  El comando initialize_project.py no existe, omitiendo inicialización automática"
+    echo "⚠️  El script initialize_project.py no existe, omitiendo inicialización automática"
     echo "   Puedes crear roles manualmente: python manage.py create_roles"
     echo "   Puedes crear datos de prueba: python manage.py crear_datos_prueba"
 fi

@@ -235,16 +235,16 @@ if %errorlevel% neq 0 (
     echo ⚠️  Advertencia al crear superusuario ^(puede ser normal si ya existe^)
 )
 
-REM Verificar si existe el comando initialize_project
-if exist "accounts\management\commands\initialize_project.py" (
+REM Verificar si existe el script initialize_project
+if exist "initialize_project.py" (
     echo 🎯 Inicializando proyecto ^(roles y datos de prueba^)...
-    .venv\Scripts\python.exe manage.py initialize_project
+    .venv\Scripts\python.exe initialize_project.py
     if %errorlevel% neq 0 (
         echo ⚠️  Advertencia al inicializar proyecto
-        echo    Puedes ejecutar manualmente: python manage.py initialize_project
+        echo    Puedes ejecutar manualmente: python initialize_project.py
     )
 ) else (
-    echo ⚠️  El comando initialize_project.py no existe, omitiendo inicialización automática
+    echo ⚠️  El script initialize_project.py no existe, omitiendo inicialización automática
     echo    Puedes crear roles manualmente: python manage.py create_roles
     echo    Puedes crear datos de prueba: python manage.py crear_datos_prueba
 )
