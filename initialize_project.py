@@ -123,19 +123,27 @@ def main():
         action='store_true',
         help='Omitir creación de roles'
     )
+    parser.add_argument(
+        '--non-interactive',
+        action='store_true',
+        help='Ejecutar sin solicitar confirmación (útil para despliegues automáticos)'
+    )
     
     args = parser.parse_args()
     
     print_header()
     
     # Verificar si ya se ha inicializado
-    if check_if_initialized():
+    if check_if_initialized() and not args.non_interactive:
         print('⚠️  El proyecto parece estar ya inicializado.')
         print('   Si deseas reinicializar, los datos existentes se mantendrán.\n')
         response = input('¿Deseas continuar de todas formas? (s/N): ')
         if response.lower() not in ['s', 'si', 'sí', 'yes', 'y']:
             print('Inicialización cancelada.\n')
             return
+    elif check_if_initialized() and args.non_interactive:
+        print('ℹ️  El proyecto ya está inicializado, omitiendo reinicialización.\n')
+        return
     
     # 1. Crear roles
     if not args.skip_roles:
