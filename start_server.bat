@@ -235,6 +235,13 @@ if %errorlevel% neq 0 (
     echo ⚠️  Advertencia al crear superusuario ^(puede ser normal si ya existe^)
 )
 
+echo 🎯 Inicializando proyecto ^(roles y datos de prueba^)...
+.venv\Scripts\python.exe manage.py initialize_project
+if %errorlevel% neq 0 (
+    echo ⚠️  Advertencia al inicializar proyecto
+    echo    Puedes ejecutar manualmente: python manage.py initialize_project
+)
+
 echo 🔍 Verificando importación de MySQLdb...
 .venv\Scripts\python.exe -c "import MySQLdb; print('MySQLdb import successful')" 2>nul
 if %errorlevel% equ 0 (

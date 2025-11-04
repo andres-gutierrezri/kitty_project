@@ -252,6 +252,13 @@ if [ $? -ne 0 ]; then
     echo "⚠️  Advertencia al crear superusuario (puede ser normal si ya existe)"
 fi
 
+echo "🎯 Inicializando proyecto (roles y datos de prueba)..."
+.venv/bin/python manage.py initialize_project
+if [ $? -ne 0 ]; then
+    echo "⚠️  Advertencia al inicializar proyecto"
+    echo "   Puedes ejecutar manualmente: python manage.py initialize_project"
+fi
+
 echo "🔍 Verificando importación de MySQLdb..."
 .venv/bin/python -c "import MySQLdb; print('MySQLdb import successful')" 2>/dev/null
 if [ $? -eq 0 ]; then

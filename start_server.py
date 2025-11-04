@@ -521,6 +521,26 @@ def run_migrations(python_executable):
 
     # Finalmente crear superusuario
     create_default_superuser(python_executable)
+    
+    # Inicializar proyecto (roles y datos de prueba)
+    print("🎯 Inicializando proyecto (roles y datos de prueba)...")
+    try:
+        result = subprocess.run([
+            str(python_executable),
+            "manage.py",
+            "initialize_project"
+        ], cwd=Path(__file__).parent, capture_output=True, text=True)
+        if result.returncode == 0:
+            if result.stdout:
+                print(result.stdout)
+        else:
+            print("⚠️  Advertencia al inicializar proyecto")
+            print("   Puedes ejecutar manualmente: python manage.py initialize_project")
+            if result.stderr:
+                print(f"   {result.stderr}")
+    except Exception as e:
+        print(f"⚠️  Advertencia al inicializar proyecto: {e}")
+        print("   Puedes ejecutar manualmente: python manage.py initialize_project")
 
 def open_browser_delayed():
     """Abre el navegador después de un pequeño delay para que el servidor esté listo"""
