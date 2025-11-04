@@ -1252,8 +1252,8 @@ python -c "import MySQLdb; print('✅ MySQLdb OK')"
     * `_has_numeric_sequence()` - Loop para secuencias numéricas
   - Normalización de texto con `unicodedata` (insensible a acentos)
   - **Templates actualizados** con lista completa de requisitos:
-    * `register.html` - 7 requisitos (1.1-1.5, 1.7-1.8)
-    * `change_password.html` - 8 requisitos completos (1.1-1.8)
+    * `register.html` - 7 requisitos (1-5, 7-8)
+    * `change_password.html` - 8 requisitos completos (1-8)
     * `password_reset_confirm.html` - 9 items (8 requisitos + confirmación)
   - **Validación JavaScript** en tiempo real para password_reset_confirm.html
     * Función `hasConsecutiveChars()` replica lógica del backend
