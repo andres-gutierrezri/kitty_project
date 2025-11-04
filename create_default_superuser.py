@@ -27,7 +27,8 @@ project_root = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, project_root)
 
 # Configurar el entorno de Django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', f"{os.environ.get('PROJECT_NAME', 'proyecto')}.settings")
+# Usar PROJECT_NAME del .env si existe, sino usar 'kitty_glow' por defecto
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', f"{os.environ.get('PROJECT_NAME', 'kitty_glow')}.settings")
 
 # Inicializar Django
 django.setup()
