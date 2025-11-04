@@ -62,14 +62,16 @@ cmds = [
 # 2. makemigrations: Genera archivos de migración para cambios en modelos
 # 3. migrate: Aplica migraciones pendientes a la base de datos
 # 4. create_default_superuser.py: Crea superusuario automáticamente si no existe
-# 5. gunicorn: Inicia el servidor WSGI de producción
+# 5. initialize_project.py: Crea roles y datos de prueba en el primer despliegue
+# 6. gunicorn: Inicia el servidor WSGI de producción
 #
 # NOTA: makemigrations se ejecuta automáticamente para generar migraciones
 #       que no están en el repositorio (ignoreadas en .gitignore)
 # NOTA: El superusuario se crea usando variables de entorno configuradas en Railway
+# NOTA: initialize_project.py usa --non-interactive para no bloquear el deploy
 # ----------------------------------------------------------------------------
 [start]
-cmd = "/opt/venv/bin/python manage.py collectstatic --noinput && /opt/venv/bin/python manage.py makemigrations && /opt/venv/bin/python manage.py migrate && /opt/venv/bin/python create_default_superuser.py && /opt/venv/bin/gunicorn proyecto.wsgi:application --workers 3 --bind 0.0.0.0:8080 --log-file -"
+cmd = "/opt/venv/bin/python manage.py collectstatic --noinput && /opt/venv/bin/python manage.py makemigrations && /opt/venv/bin/python manage.py migrate && /opt/venv/bin/python create_default_superuser.py && /opt/venv/bin/python initialize_project.py --non-interactive && /opt/venv/bin/gunicorn kitty_glow.wsgi:application --workers 3 --bind 0.0.0.0:8080 --log-file -"
 
 # Desglose del comando de inicio:
 #
@@ -95,7 +97,14 @@ cmd = "/opt/venv/bin/python manage.py collectstatic --noinput && /opt/venv/bin/p
 #   - No falla si el superusuario ya existe (seguro para re-despliegues)
 #   - Configura Django automáticamente (django.setup())
 #
-# /opt/venv/bin/gunicorn proyecto.wsgi:application
+# /opt/venv/bin/python initialize_project.py --non-interactive
+#   - Script Python independiente que inicializa el proyecto por primera vez
+#   - Crea roles de usuario (Cliente, Vendedor, Administrador)
+#   - Crea productos de prueba (80 productos de ejemplo)
+#   - --non-interactive: No solicita confirmación (modo automático para deploy)
+#   - Detecta si ya fue ejecutado y omite reinicialización
+#
+# /opt/venv/bin/gunicorn kitty_glow.wsgi:application
 #   - Inicia el servidor WSGI Gunicorn para servir la aplicación
 #   - --workers 3: Usa 3 procesos worker para manejar requests
 #   - --bind 0.0.0.0:8080: Escucha en todas las interfaces en el puerto 8080
@@ -115,7 +124,7 @@ cmd = "/opt/venv/bin/python manage.py collectstatic --noinput && /opt/venv/bin/p
 # # MYSQL_DATABASE_URL=mysql://user:pass@host:port/dbname
 #
 # Superusuario (creación automática):
-# DJANGO_SUPERUSER_EMAIL=admin@proyecto.com
+# DJANGO_SUPERUSER_EMAIL=admin@kittyglow.com
 # DJANGO_SUPERUSER_USERNAME=admin
 # DJANGO_SUPERUSER_PASSWORD=<contraseña-segura>
 # DJANGO_SUPERUSER_FIRST_NAME=Administrador  # Opcional
