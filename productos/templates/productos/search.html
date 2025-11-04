@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Búsqueda de Productos - Kitty Glow{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-search"></i> Búsqueda Avanzada de Productos</h2>
+            <hr>
+        </div>
+    </div>
+
+    <!-- Formulario de Búsqueda -->
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="get" action="{% url 'productos:search_products' %}">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                {{ form.query.label_tag }}
+                                {{ form.query }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.categoria.label_tag }}
+                                {{ form.categoria }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.precio_min.label_tag }}
+                                {{ form.precio_min }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.precio_max.label_tag }}
+                                {{ form.precio_max }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.order_by.label_tag }}
+                                {{ form.order_by }}
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <div class="form-check">
+                                    {{ form.disponible }}
+                                    {{ form.disponible.label_tag }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Buscar
+                                </button>
+                                <a href="{% url 'productos:search_products' %}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Limpiar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    {% if productos %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <h4>Resultados de búsqueda ({{ total_results }} producto{{ total_results|pluralize }})</h4>
+        </div>
+    </div>
+    <div class="row">
+        {% for producto in productos %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ producto.nombre }}</h5>
+                    <p class="card-text text-muted">{{ producto.descripcion|truncatewords:20 }}</p>
+                    
+                    {% if producto.avg_rating %}
+                    <div class="mb-2">
+                        <span class="text-warning">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= producto.avg_rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        <small class="text-muted">({{ producto.review_count }} reseña{{ producto.review_count|pluralize }})</small>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h5 text-success mb-0">${{ producto.precio }}</span>
+                        {% if producto.disponible %}
+                            <span class="badge bg-success">En stock: {{ producto.stock }}</span>
+                        {% else %}
+                            <span class="badge bg-danger">Sin stock</span>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'productos:producto_detail' producto.pk %}" class="btn btn-primary btn-sm mt-3 w-100">
+                        <i class="fas fa-eye"></i> Ver detalles
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> No se encontraron productos que coincidan con tu búsqueda.
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

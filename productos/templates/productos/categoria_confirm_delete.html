@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Eliminar Categoría - Kitty Glow{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <i class="fas fa-exclamation-triangle text-danger" style="font-size: 4rem;"></i>
+                <h1 class="mt-3">Confirmar Eliminación</h1>
+            </div>
+            
+            <!-- Confirmación -->
+            <div class="card">
+                <div class="card-body">
+                    <p class="text-center mb-4">
+                        ¿Estás seguro de que deseas eliminar la siguiente categoría?
+                    </p>
+                    
+                    <div class="alert alert-warning">
+                        <h5><i class="fas fa-tag"></i> {{ categoria.nombre }}</h5>
+                        <p class="mb-1"><strong>Descripción:</strong> {{ categoria.descripcion }}</p>
+                        <p class="mb-0">
+                            <strong>Productos asociados:</strong> 
+                            <span class="badge bg-info">{{ num_productos }}</span>
+                        </p>
+                    </div>
+                    
+                    {% if num_productos > 0 %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <strong>Advertencia:</strong> Esta categoría tiene {{ num_productos }} producto{{ num_productos|pluralize }} asociado{{ num_productos|pluralize }}. Al eliminarla, se eliminarán todas las relaciones con estos productos.
+                    </div>
+                    {% endif %}
+                    
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <strong>Esta acción no se puede deshacer.</strong>
+                    </div>
+                    
+                    <!-- Formulario de confirmación -->
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="fas fa-trash"></i> Sí, eliminar categoría
+                            </button>
+                            <a href="{% url 'productos:categoria_list' %}" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times"></i> No, cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

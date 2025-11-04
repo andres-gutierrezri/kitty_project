@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mis Favoritos - Kitty Glow{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-heart text-danger"></i> Mis Productos Favoritos</h2>
+            <hr>
+        </div>
+    </div>
+
+    {% if favorites %}
+    <div class="row">
+        <div class="col-12 mb-3">
+            <p class="text-muted">
+                <i class="fas fa-info-circle"></i> Tienes {{ favorites.count }} producto{{ favorites.count|pluralize }} en tu lista de favoritos
+            </p>
+        </div>
+    </div>
+    
+    <div class="row">
+        {% for favorite in favorites %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title mb-0">{{ favorite.producto.nombre }}</h5>
+                        <form method="post" action="{% url 'productos:toggle_favorite' favorite.producto.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Quitar de favoritos">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <p class="card-text text-muted">{{ favorite.producto.descripcion|truncatewords:20 }}</p>
+                    
+                    <div class="mb-3">
+                        <span class="h5 text-success">${{ favorite.producto.precio }}</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {% if favorite.producto.disponible %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-check-circle"></i> En stock: {{ favorite.producto.stock }}
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger">
+                                <i class="fas fa-times-circle"></i> Sin stock
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    <small class="text-muted d-block mb-3">
+                        <i class="far fa-clock"></i> Agregado el {{ favorite.created_at|date:"d/m/Y" }}
+                    </small>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'productos:producto_detail' favorite.producto.pk %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-eye"></i> Ver detalles
+                        </a>
+                        {% if favorite.producto.disponible %}
+                        <form method="post" action="{% url 'productos:add_to_cart' favorite.producto.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-success btn-sm w-100">
+                                <i class="fas fa-cart-plus"></i> Agregar al carrito
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Sin favoritos -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card text-center py-5">
+                <div class="card-body">
+                    <i class="far fa-heart fa-5x text-muted mb-4"></i>
+                    <h3>No tienes productos favoritos</h3>
+                    <p class="text-muted mb-4">Explora nuestro catálogo y marca tus productos favoritos con el ícono ❤️</p>
+                    <a href="{% url 'productos:producto_list' %}" class="btn btn-primary">
+                        <i class="fas fa-shopping-bag"></i> Explorar productos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

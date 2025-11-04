@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}Categorías - Kitty Glow{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-3">📂 Categorías</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'productos:inicio' %}">Inicio</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Categorías</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Lista de categorías -->
+    <div class="row">
+        {% if categorias %}
+            {% for categoria in categorias %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ categoria.nombre }}</h5>
+                        <p class="card-text text-muted">{{ categoria.descripcion|truncatewords:25 }}</p>
+                        <div class="mb-3">
+                            <span class="badge bg-primary">
+                                {{ categoria.num_productos }} producto{{ categoria.num_productos|pluralize }}
+                            </span>
+                        </div>
+                        <a href="{% url 'productos:categoria_detail' categoria.pk %}" class="btn btn-primary btn-sm">
+                            Ver productos →
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info text-center" role="alert">
+                    No hay categorías disponibles en este momento.
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Botón volver -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <a href="{% url 'productos:inicio' %}" class="btn btn-outline-secondary">
+                ← Volver al inicio
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

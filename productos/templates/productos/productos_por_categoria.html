@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}{{ categoria.nombre }} - Kitty Glow{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'productos:inicio' %}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'productos:categoria_list' %}">Categorías</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ categoria.nombre }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Encabezado de categoría -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="card-title mb-3">{{ categoria.nombre }}</h1>
+                    <p class="card-text text-muted">{{ categoria.descripcion }}</p>
+                    <p class="mb-0">
+                        <span class="badge bg-primary">
+                            {{ productos|length }} producto{{ productos|length|pluralize }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Productos de la categoría -->
+    <div class="row">
+        {% if productos %}
+            {% for producto in productos %}
+            <div class="col-md-4 col-lg-3 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ producto.nombre }}</h5>
+                        <p class="card-text text-muted small">{{ producto.descripcion|truncatewords:10 }}</p>
+                        <div class="mb-2">
+                            <span class="h5 text-success">${{ producto.precio }}</span>
+                        </div>
+                        <div class="mb-3">
+                            {% if producto.disponible %}
+                                <span class="badge bg-success">✓ Stock: {{ producto.stock }}</span>
+                            {% else %}
+                                <span class="badge bg-danger">✗ Sin stock</span>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'productos:producto_detail' producto.pk %}" class="btn btn-primary btn-sm w-100">
+                            Ver detalles
+                        </a>
+                    </div>
+                    <div class="card-footer text-muted small">
+                        {{ producto.fecha_creacion|date:"d/m/Y" }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info text-center" role="alert">
+                    Esta categoría no tiene productos asignados todavía.
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Navegación -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <a href="{% url 'productos:categoria_list' %}" class="btn btn-outline-secondary me-2">
+                ← Ver todas las categorías
+            </a>
+            <a href="{% url 'productos:inicio' %}" class="btn btn-outline-secondary">
+                🏠 Ir al inicio
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

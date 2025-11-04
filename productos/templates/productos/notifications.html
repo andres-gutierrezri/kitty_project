@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notificaciones - Kitty Glow{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-bell"></i> Mis Notificaciones</h2>
+            <hr>
+        </div>
+    </div>
+
+    {% if notifications %}
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            {% for notification in notifications %}
+            <div class="card mb-3 {% if not notification.is_read %}border-primary{% endif %}">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-auto">
+                            {% if notification.notification_type == 'new_product' %}
+                                <i class="fas fa-box-open fa-2x text-success"></i>
+                            {% elif notification.notification_type == 'price_drop' %}
+                                <i class="fas fa-tag fa-2x text-danger"></i>
+                            {% elif notification.notification_type == 'review_reply' %}
+                                <i class="fas fa-comment fa-2x text-primary"></i>
+                            {% elif notification.notification_type == 'favorite_available' %}
+                                <i class="fas fa-heart fa-2x text-danger"></i>
+                            {% else %}
+                                <i class="fas fa-info-circle fa-2x text-info"></i>
+                            {% endif %}
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="mb-0">
+                                    {{ notification.title }}
+                                    {% if not notification.is_read %}
+                                        <span class="badge bg-primary">Nueva</span>
+                                    {% endif %}
+                                </h5>
+                                <small class="text-muted">
+                                    <i class="far fa-clock"></i> {{ notification.created_at|timesince }} atrás
+                                </small>
+                            </div>
+                            <p class="mb-2">{{ notification.message }}</p>
+                            {% if notification.producto %}
+                            <a href="{% url 'productos:producto_detail' notification.producto.pk %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i> Ver producto
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Paginación (si la implementas más adelante) -->
+            {% if notifications.count >= 50 %}
+            <div class="text-center text-muted mt-3">
+                <small>Mostrando las últimas 50 notificaciones</small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <!-- Sin notificaciones -->
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card text-center py-5">
+                <div class="card-body">
+                    <i class="far fa-bell fa-5x text-muted mb-4"></i>
+                    <h3>No tienes notificaciones</h3>
+                    <p class="text-muted mb-4">Aquí aparecerán las notificaciones sobre productos, ofertas y más</p>
+                    <a href="{% url 'productos:producto_list' %}" class="btn btn-primary">
+                        <i class="fas fa-shopping-bag"></i> Explorar productos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

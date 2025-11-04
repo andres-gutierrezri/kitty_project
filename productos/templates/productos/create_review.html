@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Escribir Reseña - {{ producto.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="fas fa-star"></i> Escribir Reseña</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Información del producto -->
+                    <div class="alert alert-light border">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h5 class="mb-1">{{ producto.nombre }}</h5>
+                                <p class="text-muted mb-0">{{ producto.descripcion|truncatewords:15 }}</p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <span class="h5 text-success">${{ producto.precio }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulario -->
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        
+                        <!-- Calificación -->
+                        <div class="mb-4">
+                            <label for="{{ form.rating.id_for_label }}" class="form-label">
+                                <strong>{{ form.rating.label }}</strong>
+                            </label>
+                            {{ form.rating }}
+                            {% if form.rating.errors %}
+                                <div class="text-danger small">{{ form.rating.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">Selecciona tu calificación de 1 a 5 estrellas</div>
+                        </div>
+
+                        <!-- Título -->
+                        <div class="mb-4">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">
+                                <strong>{{ form.title.label }}</strong>
+                            </label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="text-danger small">{{ form.title.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">Resume tu experiencia en pocas palabras</div>
+                        </div>
+
+                        <!-- Comentario -->
+                        <div class="mb-4">
+                            <label for="{{ form.comment.id_for_label }}" class="form-label">
+                                <strong>{{ form.comment.label }}</strong>
+                            </label>
+                            {{ form.comment }}
+                            {% if form.comment.errors %}
+                                <div class="text-danger small">{{ form.comment.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">Comparte detalles sobre tu experiencia con este producto</div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'productos:producto_detail' producto.pk %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-paper-plane"></i> Publicar Reseña
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Consejos -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-lightbulb"></i> Consejos para escribir una buena reseña</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Sé específico sobre lo que te gustó o no del producto</li>
+                        <li>Menciona cómo usaste el producto</li>
+                        <li>Compara con productos similares si es relevante</li>
+                        <li>Sé honesto y objetivo en tu opinión</li>
+                        <li>Evita lenguaje ofensivo o inapropiado</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

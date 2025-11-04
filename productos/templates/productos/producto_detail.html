@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}{{ producto.nombre }} - Kitty Glow{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'productos:inicio' %}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'productos:producto_list' %}">Productos</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ producto.nombre }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información del producto -->
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h1 class="card-title mb-3">{{ producto.nombre }}</h1>
+                    
+                    <!-- Precio y stock -->
+                    <div class="mb-4">
+                        <span class="h2 text-success">${{ producto.precio }}</span>
+                        <div class="mt-2">
+                            {% if producto.disponible %}
+                                <span class="badge bg-success fs-6">✓ Disponible - Stock: {{ producto.stock }} unidades</span>
+                            {% else %}
+                                <span class="badge bg-danger fs-6">✗ Sin stock</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="mb-4">
+                        <h5>Descripción</h5>
+                        <p class="text-muted">{{ producto.descripcion }}</p>
+                    </div>
+
+                    <!-- Categorías -->
+                    <div class="mb-4">
+                        <h5>Categorías</h5>
+                        {% if categorias %}
+                            {% for pc in categorias %}
+                                <a href="{% url 'productos:categoria_detail' pc.categoria.pk %}" class="badge bg-primary text-decoration-none me-1">
+                                    {{ pc.categoria.nombre }}
+                                </a>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">Sin categorías asignadas</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Información adicional -->
+                    <div class="border-top pt-3">
+                        <small class="text-muted">
+                            Agregado el {{ producto.fecha_creacion|date:"d/m/Y H:i" }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <!-- Acciones -->
+            {% if user.is_authenticated %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Acciones</h5>
+                    <div class="d-grid gap-2">
+                        <!-- Agregar al carrito -->
+                        {% if producto.disponible %}
+                        <form method="post" action="{% url 'productos:add_to_cart' producto.pk %}">
+                            {% csrf_token %}
+                            <div class="input-group mb-2">
+                                <input type="number" name="quantity" class="form-control" value="1" min="1" max="{{ producto.stock }}">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-cart-plus"></i> Agregar al carrito
+                                </button>
+                            </div>
+                        </form>
+                        {% else %}
+                        <button class="btn btn-secondary" disabled>
+                            <i class="fas fa-cart-plus"></i> Sin stock
+                        </button>
+                        {% endif %}
+                        
+                        <!-- Favoritos -->
+                        <form method="post" action="{% url 'productos:toggle_favorite' producto.pk %}">
+                            {% csrf_token %}
+                            {% if is_favorited %}
+                                <button type="submit" class="btn btn-outline-danger w-100">
+                                    <i class="fas fa-heart"></i> Quitar de favoritos
+                                </button>
+                            {% else %}
+                                <button type="submit" class="btn btn-outline-primary w-100">
+                                    <i class="far fa-heart"></i> Agregar a favoritos
+                                </button>
+                            {% endif %}
+                        </form>
+                        
+                        <!-- Escribir reseña -->
+                        {% if not user_review %}
+                        <a href="{% url 'productos:create_review' producto.pk %}" class="btn btn-outline-warning">
+                            <i class="fas fa-star"></i> Escribir reseña
+                        </a>
+                        {% else %}
+                        <a href="{% url 'productos:edit_review' user_review.pk %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-edit"></i> Editar mi reseña
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-info-circle"></i> 
+                        <a href="{% url 'accounts:login' %}">Inicia sesión</a> para agregar al carrito, marcar favoritos o escribir reseñas.
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Calificación -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">⭐ Calificación</h5>
+                    {% if calificacion_promedio %}
+                        <div class="text-center mb-3">
+                            <span class="h2">{{ calificacion_promedio|floatformat:1 }}</span>
+                            <span class="text-muted">/ 5.0</span>
+                        </div>
+                        <p class="text-muted text-center small">
+                            Basado en {{ total_reseñas }} reseña{{ total_reseñas|pluralize }}
+                        </p>
+                    {% else %}
+                        <p class="text-muted text-center">
+                            Sin calificaciones aún
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Enlaces rápidos -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title">Enlaces rápidos</h6>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'productos:producto_list' %}" class="btn btn-outline-secondary btn-sm">
+                            ← Ver todos los productos
+                        </a>
+                        <a href="{% url 'productos:inicio' %}" class="btn btn-outline-secondary btn-sm">
+                            🏠 Ir al inicio
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reseñas -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h4 class="mb-0">💬 Reseñas de clientes</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Nuevas Reviews -->
+                    {% if reviews %}
+                        {% for review in reviews %}
+                        <div class="mb-4 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">
+                                        {{ review.user.get_full_name|default:review.user.username }}
+                                        {% if review.is_verified_purchase %}
+                                        <span class="badge bg-success text-white small">✓ Compra verificada</span>
+                                        {% endif %}
+                                    </h6>
+                                    <small class="text-muted">{{ review.created_at|date:"d/m/Y" }}</small>
+                                </div>
+                                <div>
+                                    <span class="text-warning">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= review.rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                            </div>
+                            <h6>{{ review.title }}</h6>
+                            <p class="mb-2">{{ review.comment }}</p>
+                            {% if review.helpful_count > 0 %}
+                            <small class="text-muted">
+                                <i class="fas fa-thumbs-up"></i> {{ review.helpful_count }} persona{{ review.helpful_count|pluralize }} encontr{{ review.helpful_count|pluralize:"ó,aron" }} esto útil
+                            </small>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <!-- Reseñas antiguas -->
+                    {% if reseñas %}
+                        {% for reseña in reseñas %}
+                        <div class="mb-4 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">{{ reseña.usuario.nombre }}</h6>
+                                    <small class="text-muted">{{ reseña.fecha_reseña|date:"d/m/Y H:i" }}</small>
+                                </div>
+                                <div>
+                                    <span class="badge bg-warning text-dark">
+                                        {{ reseña.calificacion }} ⭐
+                                    </span>
+                                </div>
+                            </div>
+                            <p class="mb-0">{{ reseña.comentario }}</p>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    {% if not reviews and not reseñas %}
+                        <p class="text-muted text-center mb-0">
+                            Este producto aún no tiene reseñas. ¡Sé el primero en opinar!
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
