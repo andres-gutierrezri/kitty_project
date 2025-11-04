@@ -229,42 +229,18 @@ def register_view(request):
             )
             user.role = user_role
             
-            # En producción: activar usuario inmediatamente (sin verificación de email)
-            # En desarrollo: también activar para facilitar pruebas
-            from kitty_glow.local_settings import IS_DEPLOYED
-            
-            if IS_DEPLOYED:
-                # Producción: Usuario activo de inmediato
-                user.is_active = True
-                user.email_verified = False  # Marcar que no ha verificado email
-            else:
-                # Desarrollo: Usuario activo de inmediato
-                user.is_active = True
-                user.email_verified = False
-            
+            # Desactivar usuario hasta que verifique su email
+            user.is_active = False
             user.save()
             
-            # Intentar enviar email de verificación (no bloqueante)
-            try:
-                send_verification_email(request, user)
-                email_sent = True
-            except Exception as e:
-                # Log del error pero continuar con el registro
-                print(f"⚠️  Error al enviar email de verificación: {e}")
-                email_sent = False
+            # Enviar email de verificación
+            send_verification_email(request, user)
             
-            # Mensaje de éxito con o sin email
-            if email_sent:
-                messages.success(
-                    request, 
-                    '¡Registro exitoso! Te hemos enviado un email de verificación. '
-                    'Puedes iniciar sesión ahora.'
-                )
-            else:
-                messages.success(
-                    request, 
-                    '¡Registro exitoso! Ya puedes iniciar sesión con tus credenciales.'
-                )
+            messages.success(
+                request, 
+                '¡Registro exitoso! Por favor, revisa tu correo electrónico para verificar tu cuenta. '
+                'El enlace de verificación expirará en 24 horas.'
+            )
             return redirect('accounts:login')
         else:
             messages.error(request, 'Por favor, corrige los errores en el formulario.')
@@ -763,7 +739,7 @@ def send_verification_email(request, user):
         html_message=html_message,
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[user.email],
-        fail_silently=True  # No bloquear el registro si el email falla
+        fail_silently=False
     )
 
 
