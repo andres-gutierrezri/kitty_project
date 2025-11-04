@@ -551,6 +551,9 @@ def delete_account_view(request):
             request.user.is_active = False
             request.user.save()
             
+            # Guardar la fecha de eliminación antes de cerrar sesión
+            scheduled_deletion_date = request.user.scheduled_deletion_date
+            
             # Enviar email de notificación
             send_account_deactivation_notification(request.user)
             
@@ -560,7 +563,7 @@ def delete_account_view(request):
             messages.warning(
                 request,
                 f'Tu cuenta ha sido desactivada. Será eliminada permanentemente el '
-                f'{request.user.scheduled_deletion_date.strftime("%d/%m/%Y")}. '
+                f'{scheduled_deletion_date.strftime("%d/%m/%Y")}. '
                 f'Puedes cancelar esta acción iniciando sesión antes de esa fecha.'
             )
             return redirect('accounts:login')
