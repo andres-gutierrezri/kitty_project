@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/delete_account.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            {% if is_pending_deletion %}
+            <!-- Cuenta Pendiente de Eliminación -->
+            <div class="alert alert-warning">
+                <h3 class="alert-heading">
+                    <i class="bi bi-clock-history me-2"></i>
+                    Tu cuenta está programada para ser eliminada
+                </h3>
+                <hr>
+                <p class="mb-3">
+                    Tu cuenta será eliminada permanentemente el 
+                    <strong>{{ scheduled_deletion_date|date:"d/m/Y" }}</strong>
+                    (en <strong>{{ days_remaining }} días</strong>).
+                </p>
+                <p class="mb-3">
+                    Si cambias de opinión, puedes cancelar la eliminación en cualquier momento antes de esa fecha.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'accounts:cancel_deletion' %}" class="btn btn-success">
+                        <i class="bi bi-arrow-counterclockwise me-2"></i>
+                        Cancelar Eliminación
+                    </a>
+                    <a href="{% url 'accounts:profile' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        Volver al Perfil
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <!-- Advertencia Principal -->
+            <div class="delete-warning text-center">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <h2 class="mb-3">¿Estás seguro de eliminar tu cuenta?</h2>
+                <p class="mb-0 fs-5">Esta acción tiene consecuencias <strong>permanentes</strong></p>
+            </div>
+            
+            <!-- Exportar Datos -->
+            <div class="alert alert-info mb-4">
+                <h5 class="alert-heading">
+                    <i class="bi bi-download me-2"></i>
+                    Exporta tus datos antes de eliminar
+                </h5>
+                <p class="mb-2">
+                    Descarga una copia de toda tu información personal antes de eliminar tu cuenta.
+                </p>
+                <a href="{% url 'accounts:export_data' %}" class="btn btn-sm btn-info">
+                    <i class="bi bi-file-earmark-arrow-down me-2"></i>
+                    Descargar mis datos (JSON)
+                </a>
+            </div>
+            
+            <!-- Formulario de Confirmación -->
+            <div class="danger-card">
+                <h4 class="text-danger mb-3">
+                    <i class="bi bi-shield-exclamation me-2"></i>
+                    Información Importante
+                </h4>
+                
+                <p class="text-muted mb-3">
+                    Al eliminar tu cuenta, perderás acceso permanente a todos tus datos. 
+                    Por favor, lee cuidadosamente las consecuencias antes de continuar.
+                </p>
+                
+                <!-- Consecuencias -->
+                <div class="consequence-list">
+                    <h5 class="text-warning mb-3">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        ¿Qué se eliminará?
+                    </h5>
+                    <ul class="mb-0">
+                        <li><strong>Tu perfil y datos personales</strong> (nombre, email, teléfono)</li>
+                        <li><strong>Tu historial de inicio de sesión</strong></li>
+                        <li><strong>Todas tus configuraciones personalizadas</strong></li>
+                        <li><strong>Acceso a todas las funcionalidades del sistema</strong></li>
+                        <li><strong>No podrás recuperar esta cuenta</strong> ni sus datos</li>
+                    </ul>
+                </div>
+                
+                <!-- Opciones de Eliminación -->
+                <div class="alert alert-primary mb-4">
+                    <h5 class="mb-3">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Elige una opción:
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100 border-warning">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="bi bi-clock me-2"></i>
+                                        Desactivar con período de gracia
+                                    </h6>
+                                    <p class="card-text small">
+                                        Tu cuenta se desactivará inmediatamente pero será eliminada 
+                                        <strong>en 30 días</strong>. Podrás cancelar durante este periodo.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100 border-danger">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="bi bi-trash me-2"></i>
+                                        Eliminar inmediatamente
+                                    </h6>
+                                    <p class="card-text small">
+                                        Tu cuenta será eliminada <strong>de inmediato y permanentemente</strong>. 
+                                        No podrás recuperarla.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Formulario -->
+                <form method="post" id="deleteAccountForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" id="actionInput" value="deactivate">
+                    
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-bold">
+                            <i class="bi bi-lock-fill me-2"></i>
+                            Confirma tu contraseña actual
+                        </label>
+                        <div class="input-group">
+                            <input 
+                                type="password" 
+                                class="form-control confirmation-input" 
+                                id="password" 
+                                name="password" 
+                                required
+                                placeholder="Ingresa tu contraseña"
+                            >
+                            <button 
+                                class="btn btn-outline-secondary" 
+                                type="button" 
+                                id="togglePassword"
+                                title="Mostrar/Ocultar contraseña"
+                            >
+                                <i class="bi bi-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="confirm_text" class="form-label fw-bold">
+                            <i class="bi bi-keyboard-fill me-2"></i>
+                            Escribe "ELIMINAR MI CUENTA" para confirmar
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control confirmation-input" 
+                            id="confirm_text" 
+                            name="confirm_text" 
+                            required
+                            placeholder="Escribe: ELIMINAR MI CUENTA"
+                            autocomplete="off"
+                        >
+                        <small class="text-muted">
+                            Debes escribir exactamente estas palabras en mayúsculas
+                        </small>
+                    </div>
+                    
+                    <div class="mb-4" id="immediateConfirmContainer" style="display: none;">
+                        <div class="form-check">
+                            <input 
+                                class="form-check-input" 
+                                type="checkbox" 
+                                id="confirm_immediate" 
+                                name="confirm_immediate"
+                            >
+                            <label class="form-check-label text-danger fw-bold" for="confirm_immediate">
+                                Entiendo que esta acción es inmediata e irreversible
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div class="d-flex gap-3 justify-content-between flex-wrap">
+                        <a href="{% url 'accounts:profile' %}" class="btn btn-secondary-custom">
+                            <i class="bi bi-arrow-left me-2"></i>
+                            Cancelar
+                        </a>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button 
+                                type="submit" 
+                                class="btn btn-warning"
+                                id="deactivateButton"
+                                disabled
+                            >
+                                <i class="bi bi-pause-circle me-2"></i>
+                                Desactivar (30 días de gracia)
+                            </button>
+                            <button 
+                                type="submit" 
+                                class="btn btn-danger btn-danger-custom"
+                                id="deleteButton"
+                                disabled
+                            >
+                                <i class="bi bi-trash-fill me-2"></i>
+                                Eliminar Inmediatamente
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Alternativas -->
+            <div class="alert alert-info mt-4">
+                <h5 class="alert-heading">
+                    <i class="bi bi-lightbulb-fill me-2"></i>
+                    ¿Buscas otra opción?
+                </h5>
+                <p class="mb-0">
+                    Si solo quieres tomar un descanso, considera <strong>desactivar temporalmente</strong> tu cuenta 
+                    en lugar de eliminarla. También puedes 
+                    <a href="{% url 'accounts:profile' %}" class="alert-link">volver a tu perfil</a> 
+                    o contactar al soporte si tienes algún problema.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'accounts/js/delete_account.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+{% endblock %}
+
+{% block title %}{{ page_title }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="row">
+        <div class="col-12">
+            <div class="dashboard-header mb-4">
+                <h2><i class="fas fa-user-edit"></i> Mi Perfil</h2>
+                <p class="text-muted">Actualiza tu información personal</p>
+            </div>
+            
+            {% if messages %}
+            <div class="messages-container mb-4">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Apellido</label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Teléfono</label>
+                                {{ form.phone_number }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Fecha de Nacimiento</label>
+                            {{ form.birth_date }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Biografía</label>
+                            {{ form.bio }}
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Dirección</label>
+                                {{ form.address }}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Ciudad</label>
+                                {{ form.city }}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Código Postal</label>
+                                {{ form.postal_code }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">País</label>
+                            {{ form.country }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Avatar</label>
+                            {{ form.avatar }}
+                        </div>
+                        
+                        <div class="text-end">
+                            <a href="{% url 'accounts:dashboard' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Seguridad de la Cuenta -->
+            <div class="card border-primary mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shield-alt"></i> Seguridad de la Cuenta
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <h6 class="card-title">Cambiar Contraseña</h6>
+                            <p class="card-text text-muted">
+                                Mantén tu cuenta segura actualizando tu contraseña regularmente.
+                                Por seguridad, tu sesión se cerrará después de cambiar la contraseña.
+                            </p>
+                            <a href="{% url 'accounts:change_password' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-lock"></i> Cambiar mi contraseña
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="card-title">Sesiones Activas</h6>
+                            <p class="card-text text-muted">
+                                Revisa los dispositivos que tienen acceso a tu cuenta.
+                                Cierra sesiones de dispositivos que no reconozcas.
+                            </p>
+                            <a href="{% url 'accounts:active_sessions' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-devices"></i> Ver sesiones activas
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Zona de Peligro - Eliminar Cuenta -->
+            <div class="card border-danger mt-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> Zona de Peligro
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">Eliminar mi cuenta</h6>
+                    <p class="card-text text-muted">
+                        Una vez que elimines tu cuenta, no hay vuelta atrás. Por favor, estate seguro.
+                        <strong>Esta acción es permanente e irreversible.</strong>
+                    </p>
+                    <a href="{% url 'accounts:delete_account' %}" class="btn btn-outline-danger">
+                        <i class="fas fa-trash-alt"></i> Eliminar mi cuenta
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

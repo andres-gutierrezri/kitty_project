@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuenta Desactivada - Kitty Glow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #ffc107;
+        }
+        .header h1 {
+            color: #ffc107;
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 20px 0;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .success-box {
+            background-color: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .detail-item {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .detail-item strong {
+            color: #495057;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #28a745;
+            color: #ffffff !important;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .countdown {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⏸️ Cuenta Desactivada</h1>
+        </div>
+        
+        <div class="content">
+            <p>Hola <strong>{{ user.get_full_name|default:user.username }}</strong>,</p>
+            
+            <p>
+                Tu cuenta en <strong>Kitty Glow</strong> ha sido desactivada según tu solicitud.
+            </p>
+            
+            <div class="countdown">
+                📅 Tu cuenta será eliminada permanentemente el:<br>
+                <span style="font-size: 28px;">{{ deletion_date }}</span>
+            </div>
+            
+            <div class="warning-box">
+                <p style="margin: 0;">
+                    <strong>⚠️ ¿Qué significa esto?</strong><br><br>
+                    • Tu cuenta está temporalmente desactivada<br>
+                    • No podrás iniciar sesión durante este periodo<br>
+                    • Tienes <strong>30 días</strong> para cambiar de opinión<br>
+                    • Después de esa fecha, tu cuenta será eliminada permanentemente
+                </p>
+            </div>
+            
+            <div class="detail-item">
+                <strong>🕐 Fecha de desactivación:</strong> {{ deactivation_time }}
+            </div>
+            
+            <div class="detail-item">
+                <strong>🗓️ Fecha de eliminación programada:</strong> {{ deletion_date }}
+            </div>
+            
+            <div class="success-box">
+                <p style="margin: 0;">
+                    <strong>💚 ¿Cambiaste de opinión?</strong><br><br>
+                    ¡No hay problema! Puedes cancelar la eliminación en cualquier momento antes del 
+                    <strong>{{ deletion_date }}</strong> simplemente iniciando sesión en tu cuenta.
+                    Tu cuenta se reactivará automáticamente.
+                </p>
+            </div>
+            
+            <div style="text-align: center;">
+                <p>Si deseas mantener tu cuenta, simplemente inicia sesión:</p>
+                <a href="{{ request.scheme }}://{{ request.get_host }}/accounts/login/" 
+                   class="cta-button">
+                    🔓 Reactivar Mi Cuenta
+                </a>
+            </div>
+            
+            <div class="warning-box" style="margin-top: 30px;">
+                <p style="margin: 0; font-size: 14px;">
+                    <strong>⚠️ Importante:</strong> Si no inicias sesión antes del {{ deletion_date }}, 
+                    tu cuenta y todos tus datos serán eliminados permanentemente y no podrán ser recuperados.
+                </p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>
+                Este es un correo automático, por favor no respondas.<br>
+                Si tienes preguntas, contacta a nuestro equipo de soporte.<br>
+                © {{ current_year }} Kitty Glow. Todos los derechos reservados.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

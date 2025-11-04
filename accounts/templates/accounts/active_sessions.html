@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'accounts/css/active_sessions.css' %}">
+{% endblock %}
+
+{% block title %}{{ page_title }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="row">
+        <div class="col-12">
+            <div class="dashboard-header mb-4">
+                <h2><i class="fas fa-shield-alt"></i> Sesiones Activas</h2>
+                <p class="text-muted">Gestiona los dispositivos que tienen acceso a tu cuenta</p>
+            </div>
+            
+            {% if messages %}
+            <div class="messages-container mb-4">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Información de Seguridad -->
+            <div class="security-alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle me-3" style="font-size: 2rem;"></i>
+                    <div>
+                        <h5 class="mb-2">Información Importante</h5>
+                        <p class="mb-0">
+                            Si ves algún dispositivo o ubicación que no reconoces, cierra esa sesión inmediatamente y
+                            <a href="{% url 'accounts:change_password' %}" class="text-white fw-bold text-decoration-underline">
+                                cambia tu contraseña
+                            </a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resumen -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-6">
+                            <h3 class="text-primary">{{ total_sessions }}</h3>
+                            <p class="text-muted mb-0">Sesión(es) Activa(s)</p>
+                        </div>
+                        <div class="col-md-6">
+                            {% if total_sessions > 1 %}
+                            <form method="post" action="{% url 'accounts:close_all_sessions' %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas cerrar todas las demás sesiones? Solo se mantendrá la sesión actual.');">
+                                    <i class="fas fa-sign-out-alt"></i> Cerrar Todas las Demás Sesiones
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lista de Sesiones -->
+            {% if active_sessions %}
+                {% for session in active_sessions %}
+                <div class="session-card {% if session.is_current %}current{% endif %}">
+                    <div class="session-header">
+                        <i class="fas {{ session.get_device_icon }} device-icon"></i>
+                        <div class="session-info flex-grow-1">
+                            <h5>
+                                {{ session.device_info|default:"Dispositivo Desconocido" }}
+                                {% if session.is_current %}
+                                    <span class="session-badge badge-current">
+                                        <i class="fas fa-check-circle"></i> Sesión Actual
+                                    </span>
+                                {% else %}
+                                    <span class="session-badge badge-active">
+                                        <i class="fas fa-circle"></i> Activa
+                                    </span>
+                                {% endif %}
+                            </h5>
+                            <small class="text-muted">
+                                <i class="fas fa-globe"></i> {{ session.browser_info|default:"Navegador Desconocido" }}
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="session-details">
+                        <p>
+                            <i class="fas fa-map-marker-alt text-primary"></i>
+                            <strong>Dirección IP:</strong> {{ session.ip_address }}
+                        </p>
+                        <p>
+                            <i class="fas fa-laptop text-success"></i>
+                            <strong>Sistema Operativo:</strong> {{ session.get_os_name }}
+                        </p>
+                        <p>
+                            <i class="fas fa-clock text-info"></i>
+                            <strong>Última actividad:</strong> {{ session.last_activity|date:"d/m/Y H:i:s" }}
+                        </p>
+                        <p>
+                            <i class="fas fa-calendar text-warning"></i>
+                            <strong>Inicio de sesión:</strong> {{ session.created_at|date:"d/m/Y H:i:s" }}
+                        </p>
+                        {% if session.location %}
+                        <p>
+                            <i class="fas fa-globe-americas text-danger"></i>
+                            <strong>Ubicación:</strong> {{ session.location }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    
+                    {% if not session.is_current %}
+                    <div class="text-end">
+                        <form method="post" action="{% url 'accounts:close_session' session.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger" onclick="return confirm('¿Estás seguro de que deseas cerrar esta sesión?');">
+                                <i class="fas fa-times-circle"></i> Cerrar Esta Sesión
+                            </button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <div class="text-end">
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-info-circle"></i> 
+                            Esta es tu sesión actual. Para cerrarla, usa el botón "Cerrar Sesión" del menú.
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="card">
+                <div class="card-body">
+                    <div class="no-sessions">
+                        <i class="fas fa-shield-alt text-muted"></i>
+                        <h4>No hay sesiones activas</h4>
+                        <p>Actualmente no tienes ninguna sesión activa registrada.</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Consejos de Seguridad -->
+            <div class="card mt-4 border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb"></i> Consejos de Seguridad
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Revisa regularmente tus sesiones activas para detectar accesos no autorizados</li>
+                        <li>Cierra las sesiones de dispositivos que ya no uses</li>
+                        <li>Si ves actividad sospechosa, cambia tu contraseña inmediatamente</li>
+                        <li>No inicies sesión en dispositivos públicos o compartidos</li>
+                        <li>Siempre cierra sesión cuando uses computadoras públicas</li>
+                        <li>Usa conexiones seguras (HTTPS) al acceder a tu cuenta</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Botón Regresar -->
+            <div class="text-center mt-4">
+                <a href="{% url 'accounts:profile' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver al Perfil
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'accounts/js/active_sessions.js' %}"></script>
+{% endblock %}

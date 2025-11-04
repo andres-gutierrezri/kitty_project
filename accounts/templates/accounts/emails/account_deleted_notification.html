@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuenta Eliminada - Kitty Glow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #dc3545;
+        }
+        .header h1 {
+            color: #dc3545;
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 20px 0;
+        }
+        .info-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .detail-item {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .detail-item strong {
+            color: #495057;
+        }
+        .footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .emoji {
+            font-size: 48px;
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗑️ Cuenta Eliminada</h1>
+        </div>
+        
+        <div class="content">
+            <p>Hola <strong>{{ username }}</strong>,</p>
+            
+            <p>
+                Tu cuenta en <strong>Kitty Glow</strong> ha sido eliminada permanentemente 
+                según tu solicitud.
+            </p>
+            
+            <div class="info-box">
+                <p style="margin: 0;">
+                    <strong>⚠️ Información Importante:</strong><br>
+                    Todos tus datos personales, historial y configuraciones han sido eliminados 
+                    de nuestros sistemas de manera permanente.
+                </p>
+            </div>
+            
+            <div class="detail-item">
+                <strong>📅 Fecha de eliminación:</strong> {{ deletion_time }}
+            </div>
+            
+            <div class="emoji">👋</div>
+            
+            <p style="text-align: center; font-size: 18px; color: #6c757d;">
+                <strong>Lamentamos verte partir</strong>
+            </p>
+            
+            <p style="text-align: center;">
+                Si en el futuro deseas volver, siempre serás bienvenido a crear una nueva cuenta.
+            </p>
+            
+            <div class="info-box">
+                <p style="margin: 0; font-size: 14px;">
+                    <strong>💡 Nota:</strong> Si no solicitaste esta eliminación, 
+                    contacta inmediatamente a nuestro equipo de soporte.
+                </p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>
+                Este es un correo automático, por favor no respondas.<br>
+                © {{ current_year }} Kitty Glow. Todos los derechos reservados.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
