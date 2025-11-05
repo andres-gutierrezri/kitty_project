@@ -1119,20 +1119,32 @@ def user_view_ajax(request, user_id):
         favorites_count = Favorite.objects.filter(user=user).count()
         sessions_count = LoginHistory.objects.filter(user=user, is_active=True).count()
         
+        # Manejar rol - puede ser None
+        role_display = 'Sin rol'
+        if user.role:
+            role_display = user.role.name
+        elif user.is_superuser:
+            role_display = 'Superusuario'
+        
+        # Formatear fechas con zona horaria
+        from django.utils.timezone import localtime
+        date_joined_str = localtime(user.date_joined).strftime('%d/%m/%Y %I:%M %p') if user.date_joined else 'N/A'
+        last_login_str = localtime(user.last_login).strftime('%d/%m/%Y %I:%M %p') if user.last_login else 'Nunca'
+        
         data = {
             'id': user.id,
             'username': user.username,
             'email': user.email,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'phone_number': user.phone_number,
-            'bio': user.bio,
+            'first_name': user.first_name or '',
+            'last_name': user.last_name or '',
+            'phone_number': user.phone_number or '',
+            'bio': user.bio or '',
             'is_active': user.is_active,
             'is_superuser': user.is_superuser,
             'email_verified': user.email_verified,
-            'role_display': user.get_role_display(),
-            'date_joined': user.date_joined.strftime('%d/%m/%Y %I:%M %p'),
-            'last_login': user.last_login.strftime('%d/%m/%Y %I:%M %p') if user.last_login else None,
+            'role_display': role_display,
+            'date_joined': date_joined_str,
+            'last_login': last_login_str,
             'reviews_count': reviews_count,
             'favorites_count': favorites_count,
             'sessions_count': sessions_count,
@@ -1143,7 +1155,11 @@ def user_view_ajax(request, user_id):
     except CustomUser.DoesNotExist:
         return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        # Log del error para debugging
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f'Error en user_view_ajax para user_id={user_id}: {str(e)}', exc_info=True)
+        return JsonResponse({'error': f'Error al obtener datos del usuario: {str(e)}'}, status=500)
 
 
 @login_required
