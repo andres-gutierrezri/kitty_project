@@ -346,7 +346,7 @@ kitty_project/
 - Host: `localhost`
 - Puerto: `3307`
 - Usuario: `root`
-- Password: `MySQL_3307`
+- Password: `**********`
 
 #### Configuración en macOS ARM (M1/M2/M3)
 
@@ -727,15 +727,15 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'afgr1990@gmail.com'
-EMAIL_HOST_PASSWORD = 'wdptedrqzibfqcpa'  # App Password
+EMAIL_HOST_USER = 'tu-email@gmail.com'
+EMAIL_HOST_PASSWORD = '****************'  # App Password
 ```
 
 **Configurar en `.env`**:
 ```env
 IS_DEPLOYED=False  # True para producción
-EMAIL_HOST_USER=afgr1990@gmail.com
-EMAIL_HOST_PASSWORD=wdptedrqzibfqcpa
+EMAIL_HOST_USER=tu-email@gmail.com
+EMAIL_HOST_PASSWORD=****************
 ```
 
 ### Características de los Emails
@@ -1134,13 +1134,13 @@ DEBUG=True
 # Base de datos
 DATABASE_NAME=kitty_glow_db
 DATABASE_USER=root
-DATABASE_PASSWORD=MySQL_3307
+DATABASE_PASSWORD=**********
 DATABASE_HOST=localhost
 DATABASE_PORT=3307
 
 # Email
-EMAIL_HOST_USER=afgr1990@gmail.com
-EMAIL_HOST_PASSWORD=wdptedrqzibfqcpa
+EMAIL_HOST_USER=tu-email@gmail.com
+EMAIL_HOST_PASSWORD=****************
 ```
 
 ### Configuración de Producción
