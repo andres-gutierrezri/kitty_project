@@ -64,10 +64,25 @@
     function updateRequirementIcon(element, isValid) {
         if (!element) return;
         
-        const icon = element.querySelector('.fa-check-circle');
+        const icon = element.querySelector('.fa-check-circle, .fa-times-circle, .fa-circle');
         if (icon) {
-            icon.classList.toggle('text-success', isValid);
-            icon.classList.toggle('text-muted', !isValid);
+            // Cambiar el ícono según el estado
+            if (isValid) {
+                icon.classList.remove('fa-times-circle', 'fa-circle', 'text-danger', 'text-muted');
+                icon.classList.add('fa-check-circle', 'text-success');
+            } else {
+                icon.classList.remove('fa-check-circle', 'fa-circle', 'text-success', 'text-muted');
+                icon.classList.add('fa-times-circle', 'text-danger');
+            }
+        }
+        
+        // Actualizar el estilo del elemento completo
+        if (isValid) {
+            element.classList.remove('text-danger');
+            element.classList.add('text-success');
+        } else {
+            element.classList.remove('text-success');
+            element.classList.add('text-danger');
         }
     }
 
@@ -160,6 +175,18 @@
                 updateRequirementIcon(req, results[validationOrder[index]]);
             }
         });
+        
+        // Actualizar el borde del contenedor según el estado general
+        const requirementsContainer = document.querySelector('.password-requirements');
+        if (requirementsContainer) {
+            if (results.isValid) {
+                requirementsContainer.classList.remove('border-danger', 'border-warning');
+                requirementsContainer.classList.add('border-success');
+            } else {
+                requirementsContainer.classList.remove('border-success');
+                requirementsContainer.classList.add('border-danger');
+            }
+        }
     }
 
     /**
@@ -228,8 +255,18 @@
             const requirementsList = document.querySelector('.password-requirements ul');
             if (requirementsList) {
                 requirementsList.querySelectorAll('li').forEach(req => {
-                    updateRequirementIcon(req, false);
+                    const icon = req.querySelector('.fa-check-circle, .fa-times-circle, .fa-circle');
+                    if (icon) {
+                        icon.classList.remove('fa-check-circle', 'fa-times-circle', 'text-success', 'text-danger');
+                        icon.classList.add('fa-circle', 'text-muted');
+                    }
+                    req.classList.remove('text-success', 'text-danger');
                 });
+            }
+            const requirementsContainer = document.querySelector('.password-requirements');
+            if (requirementsContainer) {
+                requirementsContainer.classList.remove('border-success', 'border-danger');
+                requirementsContainer.classList.add('border-primary');
             }
             elements.password1.classList.remove('is-valid', 'is-invalid');
             return;
