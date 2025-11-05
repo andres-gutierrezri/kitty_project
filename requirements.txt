@@ -124,6 +124,12 @@ python-dotenv==1.0.1
 # Maneja zonas horarias, deltas relativos, recurrencias
 python-dateutil==2.9.0.post0
 
+# pytz - Biblioteca de zonas horarias para Python
+# Implementación de la base de datos de zonas horarias IANA/Olson
+# Necesaria para conversión y manejo de zonas horarias en Django
+# Usada por los filtros personalizados de timezone
+pytz==2024.2
+
 # TOML - Parser para archivos TOML (Tom's Obvious Minimal Language)
 # Formato de configuración moderno usado por pyproject.toml
 # Incluido en Python 3.11+, necesario para versiones anteriores
