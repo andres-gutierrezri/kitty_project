@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load timezone_filters %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
@@ -106,11 +107,11 @@
                         </p>
                         <p>
                             <i class="fas fa-clock text-info"></i>
-                            <strong>Última actividad:</strong> {{ session.last_activity|date:"d/m/Y H:i:s" }}
+                            <strong>Última actividad:</strong> {{ session.last_activity|local_datetime:"%d/%m/%Y %I:%M:%S %p" }}
                         </p>
                         <p>
                             <i class="fas fa-calendar text-warning"></i>
-                            <strong>Inicio de sesión:</strong> {{ session.created_at|date:"d/m/Y H:i:s" }}
+                            <strong>Inicio de sesión:</strong> {{ session.created_at|local_datetime:"%d/%m/%Y %I:%M:%S %p" }}
                         </p>
                         {% if session.location %}
                         <p>

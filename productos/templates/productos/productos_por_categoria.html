@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load timezone_filters %}
 
 {% block titulo %}{{ categoria.nombre }} - Kitty Glow{% endblock %}
 
@@ -58,7 +59,7 @@
                         </a>
                     </div>
                     <div class="card-footer text-muted small">
-                        {{ producto.fecha_creacion|date:"d/m/Y" }}
+                        {{ producto.fecha_creacion|local_date:"%d/%m/%Y" }}
                     </div>
                 </div>
             </div>

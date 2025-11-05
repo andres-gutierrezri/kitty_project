@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load timezone_filters %}
 
 {% block title %}Mis Reseñas - Kitty Glow{% endblock %}
 
@@ -30,7 +31,7 @@
                         <div>
                             <h5 class="mb-1">{{ review.producto.nombre }}</h5>
                             <small class="text-muted">
-                                <i class="far fa-clock"></i> {{ review.created_at|date:"d/m/Y H:i" }}
+                                <i class="far fa-clock"></i> {{ review.created_at|local_datetime:"%d/%m/%Y %I:%M %p" }}
                             </small>
                         </div>
                         <div class="text-warning">

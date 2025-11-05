@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load timezone_filters %}
 
 {% block titulo %}{{ producto.nombre }} - Kitty Glow{% endblock %}
 
@@ -59,7 +60,7 @@
                     <!-- Información adicional -->
                     <div class="border-top pt-3">
                         <small class="text-muted">
-                            Agregado el {{ producto.fecha_creacion|date:"d/m/Y H:i" }}
+                            Agregado el {{ producto.fecha_creacion|local_datetime:"%d/%m/%Y %I:%M %p" }}
                         </small>
                     </div>
                 </div>
@@ -186,7 +187,7 @@
                                         <span class="badge bg-success text-white small">✓ Compra verificada</span>
                                         {% endif %}
                                     </h6>
-                                    <small class="text-muted">{{ review.created_at|date:"d/m/Y" }}</small>
+                                    <small class="text-muted">{{ review.created_at|local_date:"%d/%m/%Y" }}</small>
                                 </div>
                                 <div>
                                     <span class="text-warning">
