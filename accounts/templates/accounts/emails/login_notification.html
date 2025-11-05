@@ -1,3 +1,4 @@
+{% load timezone_filters %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -86,7 +87,7 @@
             <p>Te informamos que se ha iniciado sesión en tu cuenta de Kitty Glow.</p>
             
             <div class="info-box">
-                <p><strong>📅 Fecha y hora:</strong> {{ login_time }}</p>
+                <p><strong>📅 Fecha y hora:</strong> {{ login_time|local_datetime:"%d de %B de %Y, %I:%M:%S %p" }} (Hora de Colombia)</p>
             </div>
             
             <h3>📋 Detalles del inicio de sesión:</h3>

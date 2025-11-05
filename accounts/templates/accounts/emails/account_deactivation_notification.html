@@ -1,3 +1,4 @@
+{% load timezone_filters %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -101,7 +102,7 @@
             
             <div class="countdown">
                 📅 Tu cuenta será eliminada permanentemente el:<br>
-                <span style="font-size: 28px;">{{ deletion_date }}</span>
+                <span style="font-size: 28px;">{{ deletion_date|local_datetime:"%d de %B de %Y" }} (Hora de Colombia)</span>
             </div>
             
             <div class="warning-box">
@@ -115,18 +116,18 @@
             </div>
             
             <div class="detail-item">
-                <strong>🕐 Fecha de desactivación:</strong> {{ deactivation_time }}
+                <strong>🕐 Fecha de desactivación:</strong> {{ deactivation_time|local_datetime:"%d de %B de %Y, %I:%M:%S %p" }}
             </div>
             
             <div class="detail-item">
-                <strong>🗓️ Fecha de eliminación programada:</strong> {{ deletion_date }}
+                <strong>🗓️ Fecha de eliminación programada:</strong> {{ deletion_date|local_datetime:"%d de %B de %Y" }}
             </div>
             
             <div class="success-box">
                 <p style="margin: 0;">
                     <strong>💚 ¿Cambiaste de opinión?</strong><br><br>
                     ¡No hay problema! Puedes cancelar la eliminación en cualquier momento antes del 
-                    <strong>{{ deletion_date }}</strong> simplemente iniciando sesión en tu cuenta.
+                    <strong>{{ deletion_date|local_date:"%d de %B de %Y" }}</strong> simplemente iniciando sesión en tu cuenta.
                     Tu cuenta se reactivará automáticamente.
                 </p>
             </div>
@@ -141,7 +142,7 @@
             
             <div class="warning-box" style="margin-top: 30px;">
                 <p style="margin: 0; font-size: 14px;">
-                    <strong>⚠️ Importante:</strong> Si no inicias sesión antes del {{ deletion_date }}, 
+                    <strong>⚠️ Importante:</strong> Si no inicias sesión antes del {{ deletion_date|local_date:"%d de %B de %Y" }}, 
                     tu cuenta y todos tus datos serán eliminados permanentemente y no podrán ser recuperados.
                 </p>
             </div>
