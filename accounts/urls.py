@@ -35,4 +35,7 @@ urlpatterns = [
     
     # Gestión de usuarios (Admin)
     path('users/', views.user_list_view, name='user_list'),
+    path('admin/user/<int:user_id>/view/', views.user_view_ajax, name='user_view_ajax'),
+    path('admin/user/<int:user_id>/edit/', views.user_edit_ajax, name='user_edit_ajax'),
+    path('admin/user/<int:user_id>/delete/', views.user_delete_ajax, name='user_delete_ajax'),
 ]

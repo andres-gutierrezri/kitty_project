@@ -1096,3 +1096,185 @@ def close_all_sessions_view(request):
             messages.success(request, f'Se han cerrado {count} sesión(es) activa(s).')
     
     return redirect('accounts:active_sessions')
+
+
+# ============================================
+# GESTIÓN DE USUARIOS POR ADMINISTRADOR (AJAX)
+# ============================================
+
+@login_required
+def user_view_ajax(request, user_id):
+    """
+    Vista AJAX para obtener los datos de un usuario
+    """
+    if not request.user.is_admin() and not request.user.is_superuser:
+        return JsonResponse({'error': 'No tienes permisos'}, status=403)
+    
+    try:
+        user = CustomUser.objects.select_related('role').get(id=user_id)
+        
+        # Contar estadísticas
+        from productos.models import Review, Favorite
+        reviews_count = Review.objects.filter(user=user).count()
+        favorites_count = Favorite.objects.filter(user=user).count()
+        sessions_count = LoginHistory.objects.filter(user=user, is_active=True).count()
+        
+        data = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'phone_number': user.phone_number,
+            'bio': user.bio,
+            'is_active': user.is_active,
+            'is_superuser': user.is_superuser,
+            'email_verified': user.email_verified,
+            'role_display': user.get_role_display(),
+            'date_joined': user.date_joined.strftime('%d/%m/%Y %I:%M %p'),
+            'last_login': user.last_login.strftime('%d/%m/%Y %I:%M %p') if user.last_login else None,
+            'reviews_count': reviews_count,
+            'favorites_count': favorites_count,
+            'sessions_count': sessions_count,
+        }
+        
+        return JsonResponse(data)
+        
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+def user_edit_ajax(request, user_id):
+    """
+    Vista AJAX para obtener y editar un usuario
+    """
+    if not request.user.is_admin() and not request.user.is_superuser:
+        return JsonResponse({'error': 'No tienes permisos'}, status=403)
+    
+    try:
+        user = CustomUser.objects.select_related('role').get(id=user_id)
+        
+        if request.method == 'GET':
+            # Obtener datos para el formulario
+            roles = UserRole.objects.all().order_by('name')
+            
+            data = {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'phone_number': user.phone_number,
+                'bio': user.bio,
+                'is_active': user.is_active,
+                'email_verified': user.email_verified,
+                'role_id': user.role.id if user.role else None,
+                'roles': [{'id': role.id, 'name': role.name} for role in roles]
+            }
+            
+            return JsonResponse(data)
+        
+        elif request.method == 'POST':
+            # Actualizar usuario
+            try:
+                # Validar username único
+                username = request.POST.get('username')
+                if username != user.username and CustomUser.objects.filter(username=username).exists():
+                    return JsonResponse({
+                        'success': False,
+                        'message': 'El nombre de usuario ya está en uso'
+                    })
+                
+                # Validar email único
+                email = request.POST.get('email')
+                if email != user.email and CustomUser.objects.filter(email=email).exists():
+                    return JsonResponse({
+                        'success': False,
+                        'message': 'El email ya está en uso'
+                    })
+                
+                # Actualizar campos
+                user.username = username
+                user.email = email
+                user.first_name = request.POST.get('first_name', '')
+                user.last_name = request.POST.get('last_name', '')
+                user.phone_number = request.POST.get('phone_number', '')
+                user.bio = request.POST.get('bio', '')
+                user.is_active = request.POST.get('is_active') == 'on'
+                user.email_verified = request.POST.get('email_verified') == 'on'
+                
+                # Actualizar rol
+                role_id = request.POST.get('role_id')
+                if role_id:
+                    user.role = UserRole.objects.get(id=role_id)
+                
+                user.save()
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Usuario actualizado correctamente'
+                })
+                
+            except Exception as e:
+                return JsonResponse({
+                    'success': False,
+                    'message': f'Error al actualizar: {str(e)}'
+                })
+        
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+def user_delete_ajax(request, user_id):
+    """
+    Vista AJAX para eliminar un usuario
+    """
+    if not request.user.is_admin() and not request.user.is_superuser:
+        return JsonResponse({'error': 'No tienes permisos'}, status=403)
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+    try:
+        user = CustomUser.objects.get(id=user_id)
+        
+        # Prevenir que el usuario se elimine a sí mismo
+        if user.id == request.user.id:
+            return JsonResponse({
+                'success': False,
+                'message': 'No puedes eliminar tu propia cuenta'
+            })
+        
+        # Prevenir eliminar al último superusuario
+        if user.is_superuser:
+            superuser_count = CustomUser.objects.filter(is_superuser=True).count()
+            if superuser_count <= 1:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'No se puede eliminar el último superusuario del sistema'
+                })
+        
+        username = user.username
+        user.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Usuario @{username} eliminado correctamente'
+        })
+        
+    except CustomUser.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Usuario no encontrado'
+        }, status=404)
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error al eliminar: {str(e)}'
+        }, status=500)
