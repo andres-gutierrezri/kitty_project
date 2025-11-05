@@ -1117,7 +1117,8 @@ def user_view_ajax(request, user_id):
         from productos.models import Review, Favorite
         reviews_count = Review.objects.filter(user=user).count()
         favorites_count = Favorite.objects.filter(user=user).count()
-        sessions_count = LoginHistory.objects.filter(user=user, is_active=True).count()
+        # Sesiones activas son aquellas que no tienen logout_time (no se han cerrado)
+        sessions_count = LoginHistory.objects.filter(user=user, logout_time__isnull=True).count()
         
         # Manejar rol - puede ser None
         role_display = 'Sin rol'
