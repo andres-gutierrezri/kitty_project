@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles', # Archivos estáticos
     'django.contrib.humanize', # Humanizar números
     'whitenoise.runserver_nostatic', # Whitenoise para archivos estáticos
+    'kitty_glow', # App principal del proyecto (para template tags personalizados)
     'accounts.apps.AccountsConfig',  # Sistema de autenticación y usuarios
     'storages', # Almacenamiento en la nube
     'productos',
