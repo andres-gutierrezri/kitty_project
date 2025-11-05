@@ -54,6 +54,30 @@ Sistema completo de comercio electrónico desarrollado con Django 5.2.7 que incl
   - Auto-actualización cada 30 segundos
   - Limpieza automática de sesiones inactivas (+30 días)
 
+### 👥 Gestión de Usuarios (Administradores)
+- **Panel completo de gestión de usuarios**
+  - Lista de todos los usuarios del sistema con DataTables
+  - Búsqueda, filtrado y ordenamiento avanzado
+  - Información en tiempo real (reseñas, favoritos, sesiones)
+- **Modal Ver Usuario**
+  - Visualización completa de datos personales y del sistema
+  - Estadísticas en tiempo real
+  - Fechas en hora local (Colombia)
+- **Modal Editar Usuario**
+  - Formulario completo de edición con validación
+  - Edición de rol, estado y verificación de email
+  - Validación de username y email únicos
+  - Feedback inmediato con mensajes
+- **Modal Eliminar Usuario**
+  - Sistema de eliminación seguro con advertencias
+  - Confirmación obligatoria con checkbox
+  - Protección contra auto-eliminación
+  - Protección del último superusuario
+- **Sistema AJAX completo**
+  - Sin recargas de página
+  - Respuestas rápidas
+  - Experiencia fluida
+
 ### 🗑️ Gestión de Cuentas
 - **Eliminación con período de gracia (30 días)**
   - Desactivación inmediata con opción de cancelar
@@ -77,6 +101,34 @@ Sistema completo de comercio electrónico desarrollado con Django 5.2.7 que incl
 - Verificación de email
 - Diseño HTML profesional y responsive
 - **Texto plano en desarrollo** - sin HTML en la consola
+- **Fechas en hora local** - zona horaria Colombia (UTC-5)
+
+### 🌍 Sistema de Zona Horaria
+- **Filtros personalizados de Django**
+  - 6 filtros: localtime, local_datetime, local_date, local_time, timezone_name, timezone_offset
+  - 2 template tags: current_timezone, now_local
+- **Conversión automática UTC → America/Bogota**
+  - Todas las fechas en hora de Colombia
+  - Formato 12 horas (AM/PM) familiar
+  - Fechas legibles en español
+- **15 templates actualizados**
+  - 6 templates de email con fechas locales
+  - 8 templates de interfaz con fechas locales
+  - Formato consistente en toda la aplicación
+
+### 🎨 Modales Personalizados
+- **Reemplazo completo de alerts/confirms nativos**
+  - Diseño Bootstrap 5 consistente
+  - Mejor experiencia de usuario
+  - Soporte para async/await
+- **5 tipos de modales**
+  - Success, Error, Warning, Info, Confirm
+  - Iconos descriptivos
+  - Colores según tipo de mensaje
+- **Sistema unificado**
+  - Atributos data-confirm en forms
+  - Manejo automático de confirmaciones
+  - Disponible en toda la aplicación
 
 ### 🔒 Seguridad
 - 7 capas de validación para eliminación de cuenta
@@ -183,10 +235,15 @@ kitty_project/
 │   ├── wsgi.py / asgi.py           # Puntos de entrada
 │   ├── static/                      # Archivos estáticos globales
 │   │   └── js/
+│   │       ├── confirmHandlers.js   # Manejo de confirmaciones con data-confirm
+│   │       ├── customModals.js      # Sistema de modales personalizados
 │   │       ├── initializeDataTables.js
 │   │       └── themeBasedOnPreference.js
-│   └── templates/
-│       └── base.html                # Template base
+│   ├── templates/
+│   │   └── base.html                # Template base (incluye modales globales)
+│   └── templatetags/                # Template tags personalizados
+│       ├── __init__.py              # Package marker
+│       └── timezone_filters.py      # Filtros de zona horaria
 │
 ├── accounts/                        # App de autenticación
 │   ├── models.py                    # CustomUser, UserRole, LoginHistory
@@ -475,6 +532,9 @@ user.get_role_display()  # Nombre del rol
 /accounts/close-session/<id>/             # Cerrar sesión específica
 /accounts/close-all-sessions/             # Cerrar todas las sesiones excepto actual
 /accounts/users/                          # Lista usuarios (admin)
+/accounts/admin/user/<id>/view/           # Ver detalles usuario (AJAX)
+/accounts/admin/user/<id>/edit/           # Editar usuario (AJAX)
+/accounts/admin/user/<id>/delete/         # Eliminar usuario (AJAX)
 ```
 
 ---
@@ -1198,13 +1258,174 @@ python -c "import MySQLdb; print('✅ MySQLdb OK')"
 
 **Desarrollado con ❤️ usando Django 5.2.7**
 
-**Última actualización**: 4 de noviembre de 2025  
-**Versión**: 1.0.7  
+**Última actualización**: 5 de noviembre de 2025  
+**Versión**: 1.1.0  
 **Autor**: Kitty Glow Team
 
 ---
 
 ## 📝 Registro de Cambios
+
+### Versión 1.1.0 (5 de noviembre de 2025)
+- ✅ **Nuevo**: Sistema completo de gestión de usuarios para administradores
+  - **Modales interactivos** con Bootstrap 5:
+    * **Modal Ver Usuario**: Visualización completa de datos del usuario
+      - Información personal (nombre, email, teléfono, biografía)
+      - Información del sistema (rol, estado, verificación, superusuario)
+      - Estadísticas en tiempo real (reseñas, favoritos, sesiones activas)
+      - Fechas de registro y último acceso en hora local
+    * **Modal Editar Usuario**: Formulario completo de edición
+      - Campos editables: username, email, nombre, apellido, teléfono, biografía
+      - Selector de rol con todos los roles disponibles
+      - Switches para estado activo y email verificado
+      - Validación en tiempo real (username y email únicos)
+      - Feedback inmediato con mensajes de éxito/error
+    * **Modal Eliminar Usuario**: Sistema de eliminación seguro
+      - Advertencias prominentes con diseño rojo
+      - Lista clara de consecuencias de la eliminación
+      - Confirmación obligatoria mediante checkbox
+      - Protecciones: No auto-eliminación, no eliminar último superusuario
+  - **3 nuevas vistas AJAX**:
+    * `user_view_ajax()` - Obtener datos del usuario con estadísticas
+    * `user_edit_ajax()` - GET/POST para edición de usuario
+    * `user_delete_ajax()` - POST para eliminación segura
+  - **3 nuevas URLs AJAX**:
+    * `/accounts/admin/user/<id>/view/`
+    * `/accounts/admin/user/<id>/edit/`
+    * `/accounts/admin/user/<id>/delete/`
+  - **Seguridad multinivel**:
+    * Verificación de permisos de administrador en todas las vistas
+    * Prevención de auto-eliminación (botón oculto + validación backend)
+    * Prevención de eliminar último superusuario del sistema
+    * Validación de username y email únicos
+    * CSRF tokens en todas las peticiones
+  - **JavaScript actualizado**: `user-list.js` (618 líneas)
+    * Lógica completa de modales con fetch API
+    * Manejo de estados de carga con spinners
+    * Formulario de edición dinámico
+    * Modal de eliminación con confirmación obligatoria
+    * Integración con sistema de modales personalizados
+  - **Template actualizado**: `user_list.html` (121+ líneas agregadas)
+    * 3 modales Bootstrap 5 agregados
+    * Botones con data-attributes para interactividad
+    * Integrado con filtros de zona horaria
+    * Diseño responsive y profesional
+
+- ✅ **Nuevo**: Sistema de modales personalizados
+  - **Reemplazo completo de alerts y confirms nativos**:
+    * Eliminados todos los `alert()` y `confirm()` de JavaScript
+    * Reemplazados por modales Bootstrap 5 personalizados
+    * Diseño consistente con el estilo del proyecto
+    * Mejor experiencia de usuario (UX)
+  - **Nuevos archivos JavaScript globales**:
+    * `customModals.js` (8833 líneas de código)
+      - Funciones: `showSuccess()`, `showError()`, `showWarning()`, `showInfo()`, `showConfirm()`
+      - Uso de Promises para compatibilidad async/await
+      - Creación y gestión dinámica de modales
+      - Estilos consistentes con Bootstrap 5
+    * `confirmHandlers.js` (3792 líneas de código)
+      - Manejo automático de atributos `data-confirm` en forms y buttons
+      - Intercepción de submits y clicks para mostrar confirmaciones
+      - Sistema de confirmación unificado para toda la aplicación
+  - **Templates actualizados con data-confirm**:
+    * `active_sessions.html` - Confirmaciones para cerrar sesiones
+    * `cart.html` - Confirmación para eliminar productos del carrito
+    * `edit_review.html` - Confirmación para eliminar reseñas
+    * `my_reviews.html` - Confirmación para eliminar reseñas propias
+  - **JavaScript actualizado con modales personalizados**:
+    * `register.js` - Reemplazado `alert()` con `showWarning()`
+    * `delete_account.js` - Reemplazados `alert()` y `confirm()` con modales
+    * `change_password.js` - Reemplazado `confirm()` con `showConfirm()`
+  - **Integración en base.html**:
+    * Scripts incluidos globalmente para uso en toda la aplicación
+    * Disponibles en cualquier página sin importar módulos adicionales
+
+- ✅ **Nuevo**: Sistema completo de zona horaria
+  - **Filtros personalizados de Django**:
+    * Nuevo paquete: `kitty_glow/templatetags/`
+    * Archivo: `timezone_filters.py` (184 líneas)
+    * **6 filtros de conversión**:
+      - `|localtime` - Convierte datetime UTC a zona horaria local
+      - `|local_datetime` - Fecha y hora formateada en zona local
+      - `|local_date` - Solo fecha formateada en zona local
+      - `|local_time` - Solo hora formateada en zona local
+      - `|timezone_name` - Nombre de la zona horaria
+      - `|timezone_offset` - Offset de la zona horaria
+    * **2 template tags**:
+      - `{% current_timezone %}` - Muestra zona horaria actual
+      - `{% now_local %}` - Fecha/hora actual en zona local
+  - **Configuración de zona horaria**:
+    * `TIME_ZONE = 'America/Bogota'` (UTC-5)
+    * `USE_TZ = True` (timezone-aware)
+    * Conversión automática UTC → Hora local
+  - **15 templates actualizados**:
+    * **Emails (6 archivos)**: login_notification, password_changed_notification, account_deactivation_notification, account_deleted_notification, password_reset_email, verification_email
+    * **Interfaz gráfica (8 archivos)**: active_sessions, my_reviews, producto_detail, productos_por_categoria, my_favorites, lista_productos, my_activity, notifications
+    * Todos muestran fechas en hora de Colombia (UTC-5)
+    * Formatos consistentes: "dd/mm/YYYY HH:MM:SS AM/PM" o "dd/mm/YYYY"
+  - **Beneficios implementados**:
+    * Usuarios ven hora de su ubicación (Colombia)
+    * Sin confusión con UTC
+    * Fechas legibles en español
+    * Formato 12 horas familiar en Colombia
+    * Conversión automática en todos los templates
+
+- ✅ **Corregido**: Múltiples errores críticos en producción (Railway)
+  - **Error 1**: `'timezone_filters' is not a registered tag library`
+    * Causa: kitty_glow no estaba en INSTALLED_APPS
+    * Solución: Agregado 'kitty_glow' a INSTALLED_APPS en settings.py
+    * Django ahora reconoce los template tags personalizados
+  - **Error 2**: `ModuleNotFoundError: No module named 'pytz'`
+    * Causa: pytz no estaba en requirements.txt
+    * Solución: Agregado `pytz==2024.2` a requirements.txt
+    * Dependencia necesaria para conversión de zonas horarias
+  - **Error 3**: `Cannot resolve keyword 'is_active' into field` (LoginHistory)
+    * Causa: LoginHistory no tiene campo 'is_active'
+    * Solución: Usar `logout_time__isnull=True` para sesiones activas
+    * Lógica correcta: sesión activa = sin logout_time
+  - **Error 4**: `'str' object has no attribute 'utcoffset'`
+    * Causa: Funciones de notificación pasaban strings en lugar de datetime
+    * Solución: Pasar objetos datetime y dejar que templates formateen
+    * 4 funciones corregidas: send_login_notification, send_password_changed_notification, send_account_deactivation_notification, send_account_deletion_notification
+  - **Error 5**: Advertencias de archivos duplicados en collectstatic
+    * Causa: kitty_glow/static en STATICFILES_DIRS y en INSTALLED_APPS
+    * Solución: Eliminado de STATICFILES_DIRS (Django lo encuentra automáticamente)
+    * collectstatic ahora sin advertencias: "146 static files copied"
+  - **Error 6**: FieldError en user_view_ajax con campos None
+    * Causa: No se manejaban campos opcionales (role, first_name, etc.)
+    * Solución: Manejo explícito de None con valores default
+    * Uso de `localtime()` para conversión correcta de fechas
+    * Logging mejorado con stack traces completos
+
+- ✅ **Mejorado**: Configuración y organización del proyecto
+  - **INSTALLED_APPS actualizado**:
+    * Agregado 'kitty_glow' para reconocer templatetags personalizados
+    * Ordenado lógicamente con comentarios explicativos
+  - **STATICFILES_DIRS limpio**:
+    * Lista vacía (Django encuentra static/ de apps automáticamente)
+    * Sin duplicados en collectstatic
+    * Mejor rendimiento y logs más limpios
+  - **Separación de responsabilidades**:
+    * Python: Pasa datos sin formatear
+    * Templates: Formateo con filtros personalizados
+    * JavaScript: Lógica de interacción en archivos externos
+  - **Mejoras de seguridad**:
+    * Validaciones backend y frontend en todas las operaciones AJAX
+    * Logging detallado de errores para debugging
+    * Manejo robusto de casos edge (usuarios sin rol, campos None, etc.)
+
+- ✅ **Documentación**:
+  - README.md completamente actualizado con todas las nuevas características
+  - Commits detallados siguiendo guías de estilo de Git
+  - Mensajes de commit en español con descripciones completas
+  - Total de commits en esta versión: 7
+    1. `6452df8`: fix(settings) - Agregado kitty_glow a INSTALLED_APPS
+    2. `97c9ea6`: feat(admin) - Sistema de gestión de usuarios con modales
+    3. `b57faf6`: fix(deps) - Agregado pytz a requirements.txt
+    4. `022a115`: fix(admin) - Corregida vista user_view_ajax
+    5. `80877d3`: fix(settings) - Eliminados duplicados en collectstatic
+    6. `6f64497`: fix(admin) - Corregido filtro de sesiones activas
+    7. `d480d7d`: fix(emails) - Corregido paso de datetime a templates
 
 ### Versión 1.0.7 (4 de noviembre de 2025)
 - ✅ **Mejorado**: Separación de CSS y JavaScript de templates HTML
