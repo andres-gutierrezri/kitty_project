@@ -180,7 +180,14 @@ start_server.bat
 ```
 
 #### 🐍 **Multiplataforma (Python)**
+
+**🍎 macOS ARM / 🐧 Linux:**
 ```bash
+python3 start_server.py
+```
+
+**🪟 Windows:**
+```cmd
 python start_server.py
 ```
 
@@ -212,8 +219,14 @@ python -m venv .venv
 
 #### **2. Instalar dependencias**
 
-**Todos los sistemas operativos:**
+**🍎 macOS ARM / 🐧 Linux:**
 ```bash
+pip3 install --upgrade pip
+pip3 install -r requirements.txt
+```
+
+**🪟 Windows:**
+```cmd
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
@@ -223,30 +236,51 @@ Ver sección [Configuración de Base de Datos](#️-configuración-de-base-de-da
 
 #### **4. Ejecutar migraciones**
 
-**Todos los sistemas operativos:**
+**🍎 macOS ARM / 🐧 Linux:**
 ```bash
+python3 manage.py makemigrations
+python3 manage.py migrate
+```
+
+**🪟 Windows:**
+```cmd
 python manage.py makemigrations
 python manage.py migrate
 ```
 
 #### **5. Crear datos de prueba (opcional)**
 
-**Todos los sistemas operativos:**
+**🍎 macOS ARM / 🐧 Linux:**
 ```bash
+python3 manage.py crear_datos_prueba
+```
+
+**🪟 Windows:**
+```cmd
 python manage.py crear_datos_prueba
 ```
 
 #### **6. Crear superusuario**
 
-**Todos los sistemas operativos:**
+**🍎 macOS ARM / 🐧 Linux:**
 ```bash
+python3 manage.py createsuperuser
+```
+
+**🪟 Windows:**
+```cmd
 python manage.py createsuperuser
 ```
 
 #### **7. Iniciar servidor**
 
-**Todos los sistemas operativos:**
+**🍎 macOS ARM / 🐧 Linux:**
 ```bash
+python3 manage.py runserver
+```
+
+**🪟 Windows:**
+```cmd
 python manage.py runserver
 ```
 
@@ -1010,8 +1044,20 @@ source .venv/bin/activate
 
 #### **Ejecutar servidor**
 
-**Todos los sistemas operativos:**
+**🍎 macOS ARM / 🐧 Linux:**
 ```bash
+# Puerto por defecto (8000)
+python3 manage.py runserver
+
+# Puerto específico
+python3 manage.py runserver 8080
+
+# Accesible desde red local
+python3 manage.py runserver 0.0.0.0:8000
+```
+
+**🪟 Windows:**
+```cmd
 # Puerto por defecto (8000)
 python manage.py runserver
 
@@ -1024,8 +1070,25 @@ python manage.py runserver 0.0.0.0:8000
 
 ### Migraciones
 
-**Todos los sistemas operativos:**
+**🍎 macOS ARM / 🐧 Linux:**
 ```bash
+# Crear migraciones
+python3 manage.py makemigrations
+python3 manage.py makemigrations accounts
+python3 manage.py makemigrations productos
+
+# Aplicar migraciones
+python3 manage.py migrate
+
+# Ver SQL de una migración
+python3 manage.py sqlmigrate accounts 0001
+
+# Ver estado de migraciones
+python3 manage.py showmigrations
+```
+
+**🪟 Windows:**
+```cmd
 # Crear migraciones
 python manage.py makemigrations
 python manage.py makemigrations accounts
@@ -1043,8 +1106,23 @@ python manage.py showmigrations
 
 ### Administración
 
-**Todos los sistemas operativos:**
+**🍎 macOS ARM / 🐧 Linux:**
 ```bash
+# Crear superusuario
+python3 manage.py createsuperuser
+
+# O automáticamente (desarrollo)
+python3 create_default_superuser.py
+
+# Shell de Django
+python3 manage.py shell
+
+# Shell de base de datos
+python3 manage.py dbshell
+```
+
+**🪟 Windows:**
+```cmd
 # Crear superusuario
 python manage.py createsuperuser
 
@@ -1060,8 +1138,14 @@ python manage.py dbshell
 
 ### Datos de Prueba
 
-**Todos los sistemas operativos:**
+**🍎 macOS ARM / 🐧 Linux:**
 ```bash
+# Crear 15 productos en 5 categorías
+python3 manage.py crear_datos_prueba
+```
+
+**🪟 Windows:**
+```cmd
 # Crear 15 productos en 5 categorías
 python manage.py crear_datos_prueba
 ```
@@ -1071,7 +1155,7 @@ python manage.py crear_datos_prueba
 **🍎 macOS ARM / 🐧 Linux:**
 ```bash
 # Eliminar cuentas vencidas (período de gracia)
-python manage.py delete_expired_accounts
+python3 manage.py delete_expired_accounts
 
 # Verificar implementación
 ./verify_implementation.sh
@@ -1088,8 +1172,21 @@ python verify_implementation.py
 
 ### Pruebas
 
-**Todos los sistemas operativos:**
+**🍎 macOS ARM / 🐧 Linux:**
 ```bash
+# Todas las pruebas
+python3 manage.py test
+
+# App específica
+python3 manage.py test accounts
+python3 manage.py test productos
+
+# Con verbosidad
+python3 manage.py test --verbosity=2
+```
+
+**🪟 Windows:**
+```cmd
 # Todas las pruebas
 python manage.py test
 
@@ -1103,8 +1200,17 @@ python manage.py test --verbosity=2
 
 ### Archivos Estáticos
 
-**Todos los sistemas operativos:**
+**🍎 macOS ARM / 🐧 Linux:**
 ```bash
+# Recolectar archivos estáticos
+python3 manage.py collectstatic
+
+# Limpiar archivos estáticos
+python3 manage.py collectstatic --clear
+```
+
+**🪟 Windows:**
+```cmd
 # Recolectar archivos estáticos
 python manage.py collectstatic
 
@@ -1251,7 +1357,15 @@ pip install -r requirements.txt
 
 **Verificar**: Los emails se muestran en la **consola**, no en inbox.
 
+**🍎 macOS ARM / 🐧 Linux:**
 ```bash
+# En desarrollo, ver terminal donde corre el servidor
+python3 manage.py runserver
+# Los emails aparecerán aquí
+```
+
+**🪟 Windows:**
+```cmd
 # En desarrollo, ver terminal donde corre el servidor
 python manage.py runserver
 # Los emails aparecerán aquí
@@ -1261,7 +1375,19 @@ python manage.py runserver
 
 Si ya tienes datos en la BD y agregaste campos nuevos:
 
+**🍎 macOS ARM / 🐧 Linux:**
 ```bash
+# Opción 1: Eliminar BD y recrear (desarrollo)
+python3 manage.py flush
+
+# Opción 2: Migración manual
+python3 manage.py makemigrations accounts
+# Cuando pregunte, proporcionar valores por defecto
+python3 manage.py migrate accounts
+```
+
+**🪟 Windows:**
+```cmd
 # Opción 1: Eliminar BD y recrear (desarrollo)
 python manage.py flush
 
@@ -1391,8 +1517,20 @@ Este proyecto es de código abierto y está disponible para uso educativo y de d
 
 ### Comandos de Diagnóstico
 
-#### **Todos los sistemas operativos:**
+#### **🍎 macOS ARM / 🐧 Linux:**
 ```bash
+# Ver versión de Python
+python3 --version
+
+# Ver paquetes instalados
+pip3 list
+
+# Test de MySQLdb
+python3 -c "import MySQLdb; print('✅ MySQLdb OK')"
+```
+
+#### **🪟 Windows:**
+```cmd
 # Ver versión de Python
 python --version
 
