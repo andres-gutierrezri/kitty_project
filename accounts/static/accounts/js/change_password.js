@@ -17,14 +17,21 @@ document.querySelectorAll('.toggle-password').forEach(icon => {
 });
 
 // Confirmación antes de enviar
-document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
-    const confirmed = confirm(
-        '¿Estás seguro de que deseas cambiar tu contraseña?\n\n' +
-        'Tu sesión se cerrará y tendrás que iniciar sesión nuevamente con tu nueva contraseña.'
+document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const confirmed = await showConfirm(
+        '¿Estás seguro de que deseas cambiar tu contraseña?<br><br>' +
+        'Tu sesión se cerrará y tendrás que <strong>iniciar sesión nuevamente</strong> con tu nueva contraseña.',
+        {
+            title: '🔐 Cambiar Contraseña',
+            confirmText: 'Sí, cambiar contraseña',
+            cancelText: 'No, cancelar'
+        }
     );
     
-    if (!confirmed) {
-        e.preventDefault();
+    if (confirmed) {
+        e.target.submit();
     }
 });
 

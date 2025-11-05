@@ -40,16 +40,20 @@ passwordInput.addEventListener('input', checkFormValidity);
 confirmTextInput.addEventListener('input', checkFormValidity);
 
 // Manejar clic en botón de desactivar
-deactivateButton.addEventListener('click', function(e) {
+deactivateButton.addEventListener('click', async function(e) {
     e.preventDefault();
     actionInput.value = 'deactivate';
     immediateConfirmContainer.style.display = 'none';
     
-    const confirmed = confirm(
-        '⚠️ CONFIRMACIÓN REQUERIDA ⚠️\n\n' +
-        'Tu cuenta será DESACTIVADA inmediatamente y se eliminará en 30 días.\n\n' +
-        'Durante este periodo podrás cancelar la eliminación.\n\n' +
-        '¿Deseas continuar?'
+    const confirmed = await showConfirm(
+        'Tu cuenta será <strong>DESACTIVADA</strong> inmediatamente y se eliminará en <strong>30 días</strong>.<br><br>' +
+        'Durante este periodo podrás <span class="text-success">cancelar la eliminación</span> iniciando sesión.<br><br>' +
+        '¿Deseas continuar?',
+        {
+            title: '⚠️ Confirmación Requerida',
+            confirmText: 'Sí, desactivar mi cuenta',
+            cancelText: 'No, cancelar'
+        }
     );
     
     if (confirmed) {
@@ -64,21 +68,35 @@ deleteButton.addEventListener('click', function(e) {
     immediateConfirmContainer.style.display = 'block';
     
     // Esperar a que se marque el checkbox
-    setTimeout(function() {
+    setTimeout(async function() {
         if (!confirmImmediateCheckbox.checked) {
-            alert('⚠️ Para eliminar inmediatamente debes marcar la casilla de confirmación.');
+            await showWarning(
+                'Para eliminar inmediatamente tu cuenta debes marcar la casilla de confirmación.',
+                { title: '⚠️ Confirmación Requerida' }
+            );
+            actionInput.value = '';
+            immediateConfirmContainer.style.display = 'none';
             return;
         }
         
-        const confirmed = confirm(
-            '🚨 ÚLTIMA ADVERTENCIA - ELIMINACIÓN INMEDIATA 🚨\n\n' +
-            'Tu cuenta será eliminada AHORA MISMO y PERMANENTEMENTE.\n\n' +
-            'NO PODRÁS recuperarla ni sus datos.\n\n' +
-            '¿Estás COMPLETAMENTE seguro?'
+        const confirmed = await showConfirm(
+            '🚨 <strong>ÚLTIMA ADVERTENCIA - ELIMINACIÓN INMEDIATA</strong> 🚨<br><br>' +
+            'Tu cuenta será eliminada <strong>AHORA MISMO</strong> y <strong>PERMANENTEMENTE</strong>.<br><br>' +
+            '<span class="text-danger fw-bold">NO PODRÁS</span> recuperarla ni sus datos.<br><br>' +
+            '¿Estás <strong>COMPLETAMENTE</strong> seguro?',
+            {
+                title: '🚨 Última Advertencia',
+                confirmText: 'Sí, eliminar permanentemente',
+                cancelText: 'No, cancelar'
+            }
         );
         
         if (confirmed) {
             document.getElementById('deleteAccountForm').submit();
+        } else {
+            actionInput.value = '';
+            immediateConfirmContainer.style.display = 'none';
+            confirmImmediateCheckbox.checked = false;
         }
     }, 100);
 });

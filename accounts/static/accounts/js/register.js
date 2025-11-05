@@ -378,7 +378,9 @@
         // Validar términos y condiciones
         const termsCheck = document.getElementById('terms-check');
         if (termsCheck && !termsCheck.checked) {
-            alert('Debes aceptar los términos y condiciones');
+            showWarning('Debes aceptar los términos y condiciones para continuar con el registro.', {
+                title: '⚠️ Términos y Condiciones'
+            });
             isValid = false;
         }
 
