@@ -168,15 +168,19 @@ PyMySQL==1.1.2
 
 ### Opción 1: Scripts Automáticos (Recomendado)
 
+#### 🍎 **macOS / Linux**
 ```bash
-# macOS/Linux
 chmod +x start_server.sh
 ./start_server.sh
+```
 
-# Windows
+#### 🪟 **Windows**
+```cmd
 start_server.bat
+```
 
-# Python multiplataforma
+#### 🐍 **Multiplataforma (Python)**
+```bash
 python start_server.py
 ```
 
@@ -188,31 +192,61 @@ Los scripts realizan automáticamente:
 - ✅ Inicio del servidor
 - ✅ Apertura del navegador
 
+---
+
 ### Opción 2: Instalación Manual
 
-```bash
-# 1. Crear entorno virtual
-python -m venv .venv
-source .venv/bin/activate  # macOS/Linux
-.venv\Scripts\activate     # Windows
+#### **1. Crear entorno virtual**
 
-# 2. Instalar dependencias
+**🍎 macOS ARM (M1/M2/M3) / Linux:**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+**🪟 Windows:**
+```cmd
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+#### **2. Instalar dependencias**
+
+**Todos los sistemas operativos:**
+```bash
 pip install --upgrade pip
 pip install -r requirements.txt
+```
 
-# 3. Configurar base de datos (ver sección siguiente)
+#### **3. Configurar base de datos**
+Ver sección [Configuración de Base de Datos](#️-configuración-de-base-de-datos)
 
-# 4. Ejecutar migraciones
+#### **4. Ejecutar migraciones**
+
+**Todos los sistemas operativos:**
+```bash
 python manage.py makemigrations
 python manage.py migrate
+```
 
-# 5. Crear datos de prueba (opcional)
+#### **5. Crear datos de prueba (opcional)**
+
+**Todos los sistemas operativos:**
+```bash
 python manage.py crear_datos_prueba
+```
 
-# 6. Crear superusuario
+#### **6. Crear superusuario**
+
+**Todos los sistemas operativos:**
+```bash
 python manage.py createsuperuser
+```
 
-# 7. Iniciar servidor
+#### **7. Iniciar servidor**
+
+**Todos los sistemas operativos:**
+```bash
 python manage.py runserver
 ```
 
@@ -348,12 +382,26 @@ kitty_project/
 - Usuario: `root`
 - Password: `**********`
 
-#### Configuración en macOS ARM (M1/M2/M3)
+### Instalación de MySQL por Sistema Operativo
 
-Para macOS con chips Apple Silicon, se requieren variables de entorno específicas. Los scripts las configuran automáticamente, pero para configuración manual, agrega a `~/.zprofile`:
+#### 🍎 **macOS ARM (M1/M2/M3)**
+
+**Paso 1: Instalar MySQL**
+```bash
+# Opción A: Con Homebrew (recomendado)
+brew install mysql
+brew services start mysql
+
+# Opción B: Instalador oficial
+# Descargar desde: https://dev.mysql.com/downloads/mysql/
+```
+
+**Paso 2: Configurar variables de entorno**
+
+Para macOS con chips Apple Silicon, agrega estas variables a `~/.zprofile`:
 
 ```bash
-# MySQL Configuration
+# MySQL Configuration para Apple Silicon
 export PATH="/usr/local/mysql/bin:$PATH"
 export MYSQLCLIENT_CFLAGS="-I/usr/local/mysql/include"
 export MYSQLCLIENT_LDFLAGS="-L/usr/local/mysql/lib -lmysqlclient"
@@ -362,21 +410,36 @@ export DYLD_LIBRARY_PATH="/usr/local/mysql/lib:$DYLD_LIBRARY_PATH"
 export DYLD_FALLBACK_LIBRARY_PATH="/usr/local/mysql/lib:$DYLD_FALLBACK_LIBRARY_PATH"
 ```
 
-Luego recarga:
+**Paso 3: Recargar configuración**
 ```bash
 source ~/.zprofile
 ```
 
-#### Instalación de MySQL
+#### 🐧 **Linux (Ubuntu/Debian)**
 
 ```bash
-# macOS con Homebrew
-brew install mysql
-brew services start mysql
+# Actualizar repositorios
+sudo apt update
 
-# O descargar instalador oficial
-# https://dev.mysql.com/downloads/mysql/
+# Instalar MySQL Server
+sudo apt install mysql-server
+
+# Iniciar servicio
+sudo systemctl start mysql
+sudo systemctl enable mysql
+
+# Configurar seguridad
+sudo mysql_secure_installation
 ```
+
+#### 🪟 **Windows**
+
+1. Descargar MySQL Installer desde: https://dev.mysql.com/downloads/installer/
+2. Ejecutar el instalador
+3. Seleccionar "Developer Default" o "Custom"
+4. Configurar contraseña de root
+5. Completar instalación
+6. MySQL se ejecutará como servicio automáticamente
 
 ### SQLite (Alternativa Simple)
 
@@ -928,20 +991,40 @@ fecha_reseña = DateTimeField
 
 ### Gestión del Proyecto
 
-```bash
-# Activar entorno virtual
-source .venv/bin/activate  # macOS/Linux
-.venv\Scripts\activate     # Windows
+#### **Activar entorno virtual**
 
-# Ejecutar servidor
+**🍎 macOS ARM / 🐧 Linux:**
+```bash
+source .venv/bin/activate
+```
+
+**🪟 Windows (CMD):**
+```cmd
+.venv\Scripts\activate
+```
+
+**🪟 Windows (PowerShell):**
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+#### **Ejecutar servidor**
+
+**Todos los sistemas operativos:**
+```bash
+# Puerto por defecto (8000)
 python manage.py runserver
 
 # Puerto específico
 python manage.py runserver 8080
+
+# Accesible desde red local
+python manage.py runserver 0.0.0.0:8000
 ```
 
 ### Migraciones
 
+**Todos los sistemas operativos:**
 ```bash
 # Crear migraciones
 python manage.py makemigrations
@@ -960,6 +1043,7 @@ python manage.py showmigrations
 
 ### Administración
 
+**Todos los sistemas operativos:**
 ```bash
 # Crear superusuario
 python manage.py createsuperuser
@@ -976,6 +1060,7 @@ python manage.py dbshell
 
 ### Datos de Prueba
 
+**Todos los sistemas operativos:**
 ```bash
 # Crear 15 productos en 5 categorías
 python manage.py crear_datos_prueba
@@ -983,6 +1068,7 @@ python manage.py crear_datos_prueba
 
 ### Gestión de Cuentas
 
+**🍎 macOS ARM / 🐧 Linux:**
 ```bash
 # Eliminar cuentas vencidas (período de gracia)
 python manage.py delete_expired_accounts
@@ -991,8 +1077,18 @@ python manage.py delete_expired_accounts
 ./verify_implementation.sh
 ```
 
+**🪟 Windows:**
+```cmd
+# Eliminar cuentas vencidas (período de gracia)
+python manage.py delete_expired_accounts
+
+# Verificar implementación
+python verify_implementation.py
+```
+
 ### Pruebas
 
+**Todos los sistemas operativos:**
 ```bash
 # Todas las pruebas
 python manage.py test
@@ -1007,6 +1103,7 @@ python manage.py test --verbosity=2
 
 ### Archivos Estáticos
 
+**Todos los sistemas operativos:**
 ```bash
 # Recolectar archivos estáticos
 python manage.py collectstatic
@@ -1050,16 +1147,18 @@ accounts/static/accounts/
 
 ## 🔧 Solución de Problemas
 
-### Error: "Library not loaded: @rpath/libmysqlclient.24.dylib"
+### 🍎 Problemas en macOS ARM
 
-**Causa**: Bibliotecas MySQL no configuradas en macOS.
+#### Error: "Library not loaded: @rpath/libmysqlclient.24.dylib"
 
-**Solución rápida**:
+**Causa**: Bibliotecas MySQL no configuradas en macOS Apple Silicon.
+
+**Solución rápida:**
 ```bash
 ./start_server.sh  # Configura automáticamente
 ```
 
-**Solución manual**:
+**Solución manual:**
 ```bash
 # 1. Instalar MySQL
 brew install mysql
@@ -1072,25 +1171,80 @@ pip uninstall mysqlclient -y
 pip install mysqlclient --no-cache-dir
 ```
 
-### Error: "No module named 'MySQLdb'"
+#### Error: "mysql_config not found"
 
 ```bash
+# Instalar MySQL con Homebrew
+brew install mysql
+
+# O descargar instalador oficial
+# https://dev.mysql.com/downloads/mysql/
+```
+
+### 🐧 Problemas en Linux
+
+#### Error: "No module named 'MySQLdb'"
+
+```bash
+# Activar entorno virtual
 source .venv/bin/activate
+
+# Instalar dependencias del sistema
+sudo apt-get install python3-dev default-libmysqlclient-dev build-essential
+
+# Reinstalar mysqlclient
 pip install mysqlclient --no-cache-dir
 ```
 
-### Error: "mysql_config not found"
+#### Error: "mysql_config not found"
 
 ```bash
-brew install mysql
-# O descargar: https://dev.mysql.com/downloads/mysql/
+# Ubuntu/Debian
+sudo apt-get install libmysqlclient-dev
+
+# CentOS/RHEL
+sudo yum install mysql-devel
 ```
 
-### Entorno Virtual Corrupto
+### 🪟 Problemas en Windows
 
+#### Error: "No module named 'MySQLdb'"
+
+```cmd
+# Activar entorno virtual
+.venv\Scripts\activate
+
+# Reinstalar mysqlclient
+pip install mysqlclient --no-cache-dir
+```
+
+Si persiste el error, usar PyMySQL como alternativa:
+```cmd
+pip install pymysql
+```
+
+Luego agregar en `kitty_glow/__init__.py`:
+```python
+import pymysql
+pymysql.install_as_MySQLdb()
+```
+
+### 🌍 Problemas Multiplataforma
+
+#### Entorno Virtual Corrupto
+
+**🍎 macOS / 🐧 Linux:**
 ```bash
 rm -rf .venv
 ./start_server.sh  # Recrea automáticamente
+```
+
+**🪟 Windows:**
+```cmd
+rmdir /s /q .venv
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
 ```
 
 ### Emails No Se Envían (Desarrollo)
@@ -1237,6 +1391,7 @@ Este proyecto es de código abierto y está disponible para uso educativo y de d
 
 ### Comandos de Diagnóstico
 
+#### **Todos los sistemas operativos:**
 ```bash
 # Ver versión de Python
 python --version
@@ -1244,14 +1399,34 @@ python --version
 # Ver paquetes instalados
 pip list
 
+# Test de MySQLdb
+python -c "import MySQLdb; print('✅ MySQLdb OK')"
+```
+
+#### **🍎 macOS ARM / 🐧 Linux:**
+```bash
 # Ver variables de entorno MySQL
-echo $DYLD_LIBRARY_PATH
+echo $DYLD_LIBRARY_PATH           # macOS
+echo $LD_LIBRARY_PATH             # Linux
 
 # Probar conexión a MySQL
 mysql -u root -p
 
-# Test de MySQLdb
-python -c "import MySQLdb; print('✅ MySQLdb OK')"
+# Ver ubicación de MySQL
+which mysql
+mysql --version
+```
+
+#### **🪟 Windows:**
+```cmd
+# Ver variables de entorno
+echo %PATH%
+
+# Probar conexión a MySQL
+mysql -u root -p
+
+# Ver versión de MySQL
+mysql --version
 ```
 
 ---
