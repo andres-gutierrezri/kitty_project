@@ -229,9 +229,10 @@ STATIC_URL = '/staticfiles/' if IS_DEPLOYED else '/static/'
 
 # Directorios adicionales donde buscar archivos estáticos
 # NOTA: No incluir <app>/static/ aquí, Django las encuentra automáticamente
+# Como kitty_glow está en INSTALLED_APPS, Django encuentra su static/ automáticamente
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'kitty_glow', 'static'),
     # Los static de las aplicaciones se descubren automáticamente
+    # No agregar aquí directorios static de apps en INSTALLED_APPS
 ]
 
 """
