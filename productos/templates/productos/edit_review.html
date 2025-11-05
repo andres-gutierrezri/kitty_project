@@ -64,7 +64,11 @@
                                 <a href="{% url 'productos:producto_detail' producto.pk %}" class="btn btn-outline-secondary">
                                     <i class="fas fa-times"></i> Cancelar
                                 </a>
-                                <form method="post" action="{% url 'productos:delete_review' review.pk %}" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar esta reseña?');">
+                                <form method="post" action="{% url 'productos:delete_review' review.pk %}" class="d-inline"
+                                      data-confirm="¿Estás seguro de eliminar esta reseña?<br><br>Tu reseña sobre <strong>{{ producto.nombre }}</strong> será eliminada <strong>permanentemente</strong>."
+                                      data-confirm-title="🗑️ Eliminar Reseña"
+                                      data-confirm-text="Sí, eliminar"
+                                      data-cancel-text="No, cancelar">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-outline-danger">
                                         <i class="fas fa-trash"></i> Eliminar

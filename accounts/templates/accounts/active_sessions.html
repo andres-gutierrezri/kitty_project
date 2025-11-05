@@ -54,9 +54,13 @@
                         </div>
                         <div class="col-md-6">
                             {% if total_sessions > 1 %}
-                            <form method="post" action="{% url 'accounts:close_all_sessions' %}" style="display: inline;">
+                            <form method="post" action="{% url 'accounts:close_all_sessions' %}" style="display: inline;" 
+                                  data-confirm="¿Estás seguro de que deseas cerrar todas las demás sesiones?<br><br>Solo se mantendrá la <strong>sesión actual</strong>."
+                                  data-confirm-title="🔒 Cerrar Todas las Sesiones"
+                                  data-confirm-text="Sí, cerrar todas"
+                                  data-cancel-text="No, cancelar">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas cerrar todas las demás sesiones? Solo se mantendrá la sesión actual.');">
+                                <button type="submit" class="btn btn-danger">
                                     <i class="fas fa-sign-out-alt"></i> Cerrar Todas las Demás Sesiones
                                 </button>
                             </form>
@@ -118,9 +122,13 @@
                     
                     {% if not session.is_current %}
                     <div class="text-end">
-                        <form method="post" action="{% url 'accounts:close_session' session.id %}" style="display: inline;">
+                        <form method="post" action="{% url 'accounts:close_session' session.id %}" style="display: inline;"
+                              data-confirm="¿Estás seguro de que deseas cerrar esta sesión?<br><br>Se cerrará la sesión desde <strong>{{ session.device_type }}</strong> en <strong>{{ session.location }}</strong>."
+                              data-confirm-title="🔒 Cerrar Sesión"
+                              data-confirm-text="Sí, cerrar sesión"
+                              data-cancel-text="No, cancelar">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger" onclick="return confirm('¿Estás seguro de que deseas cerrar esta sesión?');">
+                            <button type="submit" class="btn btn-outline-danger">
                                 <i class="fas fa-times-circle"></i> Cerrar Esta Sesión
                             </button>
                         </form>

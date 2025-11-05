@@ -52,7 +52,11 @@
                             <h5 class="text-success mb-0">${{ item.subtotal }}</h5>
                         </div>
                         <div class="col-md-1 text-end">
-                            <form method="post" action="{% url 'productos:remove_from_cart' item.pk %}" onsubmit="return confirm('¿Eliminar este producto del carrito?');">
+                            <form method="post" action="{% url 'productos:remove_from_cart' item.pk %}"
+                                  data-confirm="¿Eliminar <strong>{{ item.producto.nombre }}</strong> del carrito?"
+                                  data-confirm-title="🗑️ Eliminar Producto"
+                                  data-confirm-text="Sí, eliminar"
+                                  data-cancel-text="No, mantener">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-sm btn-danger">
                                     <i class="fas fa-trash"></i>
@@ -66,7 +70,11 @@
 
             <!-- Botón vaciar carrito -->
             <div class="text-end mb-3">
-                <form method="post" action="{% url 'productos:clear_cart' %}" class="d-inline" onsubmit="return confirm('¿Está seguro de vaciar el carrito?');">
+                <form method="post" action="{% url 'productos:clear_cart' %}" class="d-inline"
+                      data-confirm="¿Está seguro de que desea vaciar el carrito?<br><br>Se eliminarán <strong>todos los productos</strong>."
+                      data-confirm-title="🗑️ Vaciar Carrito"
+                      data-confirm-text="Sí, vaciar carrito"
+                      data-cancel-text="No, cancelar">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-outline-danger">
                         <i class="fas fa-trash-alt"></i> Vaciar carrito
