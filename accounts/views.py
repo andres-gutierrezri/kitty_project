@@ -753,7 +753,7 @@ def send_login_notification(request, user):
     subject = 'Notificación de inicio de sesión en Kitty Glow'
     html_message = render_to_string('accounts/emails/login_notification.html', {
         'user': user,
-        'login_time': timezone.now().strftime('%d/%m/%Y a las %H:%M:%S'),
+        'login_time': timezone.now(),  # Pasar datetime, no string - el template lo formatea
         'ip_address': get_client_ip(request),
         'user_agent': request.META.get('HTTP_USER_AGENT', 'Desconocido'),
         'current_year': timezone.now().year,
@@ -779,7 +779,7 @@ def send_password_changed_notification(request, user):
     subject = 'Tu contraseña ha sido actualizada - Kitty Glow'
     html_message = render_to_string('accounts/emails/password_changed_notification.html', {
         'user': user,
-        'change_time': timezone.now().strftime('%d/%m/%Y a las %H:%M:%S'),
+        'change_time': timezone.now(),  # Pasar datetime, no string - el template lo formatea
         'ip_address': get_client_ip(request),
         'user_agent': request.META.get('HTTP_USER_AGENT', 'Desconocido'),
         'current_year': timezone.now().year,
@@ -805,7 +805,7 @@ def send_account_deletion_notification(user_email, username):
     subject = 'Tu cuenta ha sido eliminada - Kitty Glow'
     html_message = render_to_string('accounts/emails/account_deleted_notification.html', {
         'username': username,
-        'deletion_time': timezone.now().strftime('%d/%m/%Y a las %H:%M:%S'),
+        'deletion_time': timezone.now(),  # Pasar datetime, no string - el template lo formatea
         'current_year': timezone.now().year,
     })
     
@@ -826,13 +826,13 @@ def send_account_deactivation_notification(user):
     """
     Envía un email de notificación cuando se desactiva una cuenta (período de gracia)
     """
-    deletion_date = (timezone.now() + timedelta(days=30)).strftime('%d/%m/%Y')
+    deletion_date = timezone.now() + timedelta(days=30)  # Pasar datetime, no string
     
     subject = 'Tu cuenta será eliminada - Kitty Glow'
     html_message = render_to_string('accounts/emails/account_deactivation_notification.html', {
         'user': user,
-        'deactivation_time': timezone.now().strftime('%d/%m/%Y a las %H:%M:%S'),
-        'deletion_date': deletion_date,
+        'deactivation_time': timezone.now(),  # Pasar datetime, no string - el template lo formatea
+        'deletion_date': deletion_date,  # Pasar datetime, no string - el template lo formatea
         'current_year': timezone.now().year,
     })
     
